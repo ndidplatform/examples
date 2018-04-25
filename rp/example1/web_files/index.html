@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>RP-1 website</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-brand mb-0 h1">RP-1</span>
+    </nav>
+    
+    <div class="container">
+
+      <div class="content">
+
+        <div class="card" style="width: 42rem;">
+          <div class="card-body">
+            <h5 class="card-title">Identity Verification</h5>
+
+            <div id="step1">
+              <p class="card-text">We need you to verify that it is actually you who wants to make a transaction with us. <!--Please select IDP(s) below you want to use to verify your identity.--></p>
+
+              <!--<div id="noSelectedIdpAlert" class="alert alert-warning d-none" role="alert">
+                Please select at least one IDP
+              </div>
+
+              <div id="idps"></div>-->
+              <div>
+                Namespace: <input type="textbox" id="namespace" class="form-control"></input>
+                Identifier: <input type="textbox" id="identifier" class="form-control"></input>
+                <br/>
+              </div>
+
+              <div style="text-align: center">
+                <button id="verify" class="btn btn-primary">Request Identity Verification</button>
+                <button id="verifyWithMockData" class="btn btn-primary">Request Identity Verification with Data request</button>
+                <!-- <button id="verifyHideSourceRp" class="btn btn-primary d-none">Verify Your Identity (Hide Source RP)</button> -->
+              </div>
+
+            </div>
+
+            <div id="step2" class="d-none">
+              <p class="card-text">Please verify your identity with IDP(s) you've selected.</p>
+              <p id="requestId">Request ID:</p>
+              <p id="referenceId">Ref:</p>
+
+              <div class="status-container">
+                <div class="circle-loader">
+                  <div class="checkmark"></div>
+                </div>
+                <div id="status"></div>
+              </div>
+
+            </div>
+
+            <div id="step3" class="d-none">
+              <p class="card-text">Data from Authorative Source:</p>
+
+              <div class="status-container">
+                <div class="circle-loader">
+                  <div class="checkmark"></div>
+                </div>
+                <div id="dataStatus"></div>
+                <div id="dataDisplay"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/script.js"></script>
+  </body>
+</html>

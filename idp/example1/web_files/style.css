@@ -1,0 +1,24 @@
+.container {
+  padding-top: 1em;
+}
+
+.list-card {
+  margin-bottom: 1em;
+}
+
+.request-list-item {
+  display: flex;
+  flex-direction: row;
+}
+
+.request-info {
+  flex: 1 1 auto;
+}
+
+.request-buttons {
+  flex: 0 1 auto;
+}
+
+.data-list-item {
+  margin-left: 1.25rem;
+}
