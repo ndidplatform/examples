@@ -28,7 +28,10 @@ app.use(bodyParser.json({ limit: '2mb' }));
 app.use(morgan('combined'));
 
 // FOR DEBUG
-if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined) {
+if (
+  process.env.NODE_ENV === 'development' ||
+  process.env.NODE_ENV === undefined
+) {
   app.use((req, res, next) => {
     if (req.method === 'POST') {
       console.log(req.method, req.originalUrl, req.params, req.body);
@@ -72,15 +75,16 @@ app.post('/accept', async (req, res) => {
   }
 
   try {
-    API.createIdpResponse({
-      status: 'accept',
+    await API.createIdpResponse({
       request_id: requestId,
       namespace: 'cid',
-      identifier: user.citizenId,
-      // secret,
-      // aal,
-      // signature,
-      // accessor_id,
+      identifier: user.identifier,
+      ial: 3,
+      aal: 2,
+      secret: '<secret>',
+      status: 'accept',
+      signature: '<signature>',
+      accessor_id: '<accessor_id>',
     });
 
     db.removeRequest(requestId);
@@ -91,7 +95,7 @@ app.post('/accept', async (req, res) => {
   }
 });
 
-app.post('/reject', function(req, res) {
+app.post('/reject', async (req, res) => {
   const { userId, requestId } = req.body;
 
   const user = db.getUser(userId);
@@ -102,15 +106,16 @@ app.post('/reject', function(req, res) {
   }
 
   try {
-    API.createIdpResponse({
-      status: 'reject',
+    await API.createIdpResponse({
       request_id: requestId,
       namespace: 'cid',
-      identifier: user.citizenId,
-      // secret,
-      // aal,
-      // signature,
-      // accessor_id,
+      identifier: user.identifier,
+      ial: 3,
+      aal: 2,
+      secret: '<secret>',
+      status: 'reject',
+      signature: '<signature>',
+      accessor_id: '<accessor_id>',
     });
 
     db.removeRequest(requestId);

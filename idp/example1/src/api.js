@@ -52,14 +52,15 @@ export const setCallbackUrl = async ({ url }) => {
 };
 
 export const createIdpResponse = async ({
-  status,
   request_id,
   namespace,
   identifier,
-  // secret,
-  // aal,
-  // signature,
-  // accessor_id,
+  ial,
+  aal,
+  secret,
+  status,
+  signature,
+  accessor_id,
 }) => {
   try {
     const response = await fetch(`${apiServerAddress}/idp/response`, {
@@ -69,18 +70,23 @@ export const createIdpResponse = async ({
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        status,
         request_id,
         namespace,
         identifier,
-        // secret,
-        // aal,
-        // signature,
-        // accessor_id,
+        ial,
+        aal,
+        secret,
+        status,
+        signature,
+        accessor_id,
       }),
     });
 
     if (!response.ok) {
+      if (response.status === 400) {
+        let responseJson = await response.json();
+        console.error(responseJson);
+      }
       throw response;
     }
 
@@ -103,14 +109,13 @@ export async function createNewIdentity(data) {
       namespace: data.namespace,
       identifier: data.identifier,
       secret: 'MAGIC',
-	    accessor_type: 'awesome-type',
-	    accessor_key: 'awesome-key',
-	    accessor_id: 'some-awesome-accessor'
-    })
+      accessor_type: 'awesome-type',
+      accessor_key: 'awesome-key',
+      accessor_id: 'some-awesome-accessor',
+    }),
   });
   let isSuccess = await response.text();
-  if(isSuccess === 'true') {
+  if (isSuccess === 'true') {
     return db.addUser(data.namespace, data.identifier);
-  }
-  else return 0;
+  } else return 0;
 }
