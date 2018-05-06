@@ -11,7 +11,7 @@ cd ../api &&
 git checkout add-docker &&
 docker build -t ndidplatform/api -f Dockerfile . &&
 cd ../examples &&
-git checkout add-docker && cp docker\* . &&
+git checkout add-docker && cd docker && cp * ../ && cd ..
 docker build -t ndidplatform/idp-examples -f Dockerfile-idp . &&
 docker build -t ndidplatform/rp-examples -f Dockerfile-rp . &&
 cd .. &&
