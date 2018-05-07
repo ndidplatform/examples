@@ -68,10 +68,11 @@ services:
     environment:
       SERVER_PORT: 8001
       API_SERVER_ADDRESS: http://api-idp:8080
-      NDID_API_CALLBACK_IP: 0.0.0.0
+      NDID_API_CALLBACK_IP: idp-example
       NDID_API_CALLBACK_PORT: 5001
     ports:
       - 8001:8001
+      - 5001:5001
     depends_on:
       - api-idp
     entrypoint:
@@ -83,10 +84,11 @@ services:
     environment:
       SERVER_PORT: 8002
       API_SERVER_ADDRESS: http://api-rp:8081
-      NDID_API_CALLBACK_IP: 0.0.0.0
+      NDID_API_CALLBACK_IP: rp-example
       NDID_API_CALLBACK_PORT: 5002
     ports:
       - 8002:8002
+      - 5002:5002
     depends_on:
       - api-rp
     entrypoint:
