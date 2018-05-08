@@ -20,22 +20,19 @@ services:
       - abci-rp
   abci-idp:
     image: ndidplatform/smart-contract
-    environment:
-      CALLBACK_URI: http://api-idp:3001/callback
     command: ["/abci-server","tcp://0.0.0.0:46000"]
   abci-rp:
     image: ndidplatform/smart-contract
-    environment:
-      CALLBACK_URI: http://api-rp:3002/callback
     command: ["/abci-server","tcp://0.0.0.0:46001"]
   api-idp:
     image: ndidplatform/api
     environment:
       ROLE: idp
-      MQ_CONTACT_IP: 0.0.0.0
+      MQ_CONTACT_IP: api-idp
       MQ_BINDING_PORT: 5555
       ASSOC_USERS: users.json
-      TENDERMINT_ADDRESS: http://tm-idp:45000
+      TENDERMINT_IP: tm-idp
+      TENDERMINT_PORT: 45000
       SERVER_PORT: 8080
       ABCI_APP_CALLBACK_PORT: 3001
     ports:
@@ -50,9 +47,10 @@ services:
     image: ndidplatform/api
     environment:
       ROLE: rp
-      MQ_CONTACT_IP: 0.0.0.0
+      MQ_CONTACT_IP: api-rp
       MQ_BINDING_PORT: 5556
-      TENDERMINT_ADDRESS: http://tm-rp:45001
+      TENDERMINT_IP: tm-rp
+      TENDERMINT_PORT: 45001
       SERVER_PORT: 8081
       ABCI_APP_CALLBACK_PORT: 3002
     ports:
