@@ -59,7 +59,8 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
   // statusElement.style = '';
   needData = withMockData;
   verifyButton.textContent = 'Requesting...';
-  verifyButton.disabled = true;
+  if(withMockData) verifyButton.disabled = true;
+  else verifyWithMockDataButton.disabled = true;
 
   fetch('/createRequest', {
     method: 'POST',
@@ -95,6 +96,7 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
     .then(() => {
       verifyButton.textContent = 'Request Identity Verification';
       verifyButton.disabled = false;
+      verifyWithMockDataButton.disabled = false;
     });
   /*} else {
     noSelectedIdpAlert.classList.remove('d-none');
