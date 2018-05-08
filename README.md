@@ -9,3 +9,4 @@ cd docker
 ./build-container.sh
 docker-compose up
 ```
+Then you can run idp-example at port 8001 and rp-example at port 8002
