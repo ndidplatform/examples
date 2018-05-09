@@ -80,7 +80,7 @@ app.post('/accept', async (req, res) => {
       namespace: 'cid',
       identifier: user.identifier,
       ial: 3,
-      aal: 2,
+      aal: 3,
       secret: '<secret>',
       status: 'accept',
       signature: '<signature>',

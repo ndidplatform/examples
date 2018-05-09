@@ -52,7 +52,7 @@ app.post('/createRequest', async (req, res) => {
           format: 'pdf' } 
       }] : [],
       request_message: 'dummy Request Message',
-      min_ial: 1,
+      min_ial: 1.1,
       min_aal: 1,
       min_idp: 1,
       request_timeout: 259200,
