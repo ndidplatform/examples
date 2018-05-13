@@ -18,12 +18,35 @@ services:
       - 47001:47001
     depends_on:
       - abci-rp
+  tm-as:
+    image: ndidplatform/tendermint:0.16.0
+    volumes:
+      - ./docker-config/tendermint/AS:/tendermint
+    ports:
+      - 45002:45002
+      - 47002:47002
+    depends_on:
+      - abci-as
   abci-idp:
     image: ndidplatform/smart-contract
     command: ["/abci-server","tcp://0.0.0.0:46000"]
   abci-rp:
     image: ndidplatform/smart-contract
     command: ["/abci-server","tcp://0.0.0.0:46001"]
+  abci-as:
+    image: ndidplatform/smart-contract
+    command: ["/abci-server","tcp://0.0.0.0:46002"]
+  api-ndid:
+    image: ndidplatform/api
+    environment:
+      TENDERMINT_IP: tm-idp
+      TENDERMINT_PORT: 45000
+    depends_on:
+      - tm-idp
+    entrypoint:
+      /bin/bash -c "/bin/bash -c \"$${@}\""
+    command:
+      /bin/bash -c "sleep 30 && npm run initDevKey"
   api-idp:
     image: ndidplatform/api
     environment:
@@ -34,7 +57,6 @@ services:
       TENDERMINT_IP: tm-idp
       TENDERMINT_PORT: 45000
       SERVER_PORT: 8080
-      ABCI_APP_CALLBACK_PORT: 3001
     ports:
       - 8080:8080
     depends_on:
@@ -42,7 +64,7 @@ services:
     entrypoint:
       /bin/bash -c "/bin/bash -c \"$${@}\""
     command:
-      /bin/bash -c "sleep 30 && npm start"
+      /bin/bash -c "sleep 60 && npm start"
   api-rp:
     image: ndidplatform/api
     environment:
@@ -52,7 +74,6 @@ services:
       TENDERMINT_IP: tm-rp
       TENDERMINT_PORT: 45001
       SERVER_PORT: 8081
-      ABCI_APP_CALLBACK_PORT: 3002
     ports:
       - 8081:8081
     depends_on:
@@ -60,7 +81,25 @@ services:
     entrypoint:
       /bin/bash -c "/bin/bash -c \"$${@}\""
     command:
-      /bin/bash -c "sleep 30 && npm start"
+      /bin/bash -c "sleep 60 && npm start"
+  api-as:
+    image: ndidplatform/api
+    environment:
+      ROLE: as
+      MQ_CONTACT_IP: api-as
+      MQ_BINDING_PORT: 5557
+      TENDERMINT_IP: tm-as
+      TENDERMINT_PORT: 45002
+      SERVER_PORT: 8082
+      AS_ID: AS1
+    ports:
+      - 8082:8082
+    depends_on:
+      - tm-as
+    entrypoint:
+      /bin/bash -c "/bin/bash -c \"$${@}\""
+    command:
+      /bin/bash -c "sleep 60 && npm start"
   idp-example:
     image: ndidplatform/idp-examples
     environment:
@@ -76,7 +115,7 @@ services:
     entrypoint:
       /bin/bash -c "/bin/bash -c \"$${@}\""
     command:
-      /bin/bash -c "sleep 60 && npm start"
+      /bin/bash -c "sleep 90 && npm start"
   rp-example:
     image: ndidplatform/rp-examples
     environment:
@@ -92,4 +131,16 @@ services:
     entrypoint:
       /bin/bash -c "/bin/bash -c \"$${@}\""
     command:
-      /bin/bash -c "sleep 60 && npm start"
+      /bin/bash -c "sleep 90 && npm start"
+  as-example:
+    image: ndidplatform/as-examples
+    environment:
+      API_SERVER_ADDRESS: http://api-as:8082
+      NDID_API_CALLBACK_IP: as-example
+      NDID_API_CALLBACK_PORT: 5003
+    depends_on:
+      - api-as
+    entrypoint:
+      /bin/bash -c "/bin/bash -c \"$${@}\""
+    command:
+      /bin/bash -c "sleep 90 && npm start"

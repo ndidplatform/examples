@@ -14,6 +14,7 @@ cd ../examples &&
 git checkout add-docker && cd docker && cp * ../ && cd ..
 docker build -t ndidplatform/idp-examples -f Dockerfile-idp . &&
 docker build -t ndidplatform/rp-examples -f Dockerfile-rp . &&
+docker build -t ndidplatform/as-examples -f Dockerfile-as . &&
 cd .. &&
 rm -r smart-contract &&
 rm -r api &&
