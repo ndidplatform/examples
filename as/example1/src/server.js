@@ -35,7 +35,7 @@ process.on('unhandledRejection',function(reason,p){
 
       //set timeout to simulate request processing
       setTimeout(() => {
-        res.status(2000).json({
+        res.status(200).json({
           data:'mock data'
         });
       },2000);
