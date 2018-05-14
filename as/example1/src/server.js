@@ -33,9 +33,12 @@ process.on('unhandledRejection',function(reason,p){
 
       console.log(request);
 
-      res.status(200).json({
-        data:'mock data'
-      });
+      //set timeout to simulate request processing
+      setTimeout(() => {
+        res.status(2000).json({
+          data:'mock data'
+        });
+      },2000);
   });
 
   app.listen(NDID_API_CALLBACK_PORT,() => {
