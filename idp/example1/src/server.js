@@ -48,8 +48,23 @@ app.get('/identity', (req, res) => {
 });
 
 app.post('/identity', async (req, res) => {
-  let result = await API.createNewIdentity(req.body);
-  res.status(200).send(result.toString());
+  const { namespace, identifier } = req.body;
+  try {
+    await API.createNewIdentity({
+      namespace,
+      identifier,
+      secret: 'MAGIC',
+      accessor_type: 'awesome-type',
+      accessor_key: 'awesome-key',
+      accessor_id: 'some-awesome-accessor',
+    });
+  
+    db.addUser(namespace, identifier);
+  
+    res.status(200).end();
+  } catch (error) {
+    res.status(500).end();
+  }
 });
 
 app.get('/home/:namespace/:identifier', (req, res) => {

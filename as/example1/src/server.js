@@ -9,7 +9,9 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
 (async () => {
   for (;;) {
     try {
-      await API.setCallbackUrl({ url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/as/service` });
+      await API.setCallbackUrl({
+        url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/as/service`,
+      });
       break;
     } catch (error) {
       console.error('Error setting callback URL at NDID API');
@@ -19,34 +21,30 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
   }
 })();
 
-process.on('unhandledRejection',function(reason,p){
-    console.error('Unhandled Rejection:',p,'\nreason:',reason.stack||reason);
+process.on('unhandledRejection', function(reason, p) {
+  console.error('Unhandled Rejection:', p, '\nreason:', reason.stack || reason);
 });
 
-  const app = express();
+const app = express();
 
-  app.use(bodyParser.json({ limit: '2mb' }));
+app.use(bodyParser.json({ limit: '2mb' }));
 
-  app.post('/as/service',async (req,res) => {
-      //=================== Real business logic here ========================
-      const { request } = req.body;
+app.post('/as/service', async (req, res) => {
+  //=================== Real business logic here ========================
+  const { request } = req.body;
 
-      console.log(request);
+  console.log(request);
 
-      //set timeout to simulate request processing
-      setTimeout(() => {
-        res.status(200).json({
-          data:'mock data'
-        });
-      },2000);
-  });
+  //set timeout to simulate request processing
+  setTimeout(() => {
+    res.status(200).json({
+      data: 'mock data',
+    });
+  }, 2000);
+});
 
-  app.listen(NDID_API_CALLBACK_PORT,() => {
-      console.log(
-          `Listening to NDID API callbacks on port ${NDID_API_CALLBACK_PORT}`
-        );
-  });
-
-
-
-
+app.listen(NDID_API_CALLBACK_PORT, () => {
+  console.log(
+    `Listening to NDID API callbacks on port ${NDID_API_CALLBACK_PORT}`
+  );
+});

@@ -8,18 +8,30 @@ function createNewIdentity() {
     },
     body: JSON.stringify({
       namespace,
-      identifier
+      identifier,
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw response;
+      }
+      return response.text();
     })
-  }).then((response) => {
-    return response.text();
-  }).then((text) => {
-    if(parseInt(text) !== 0) {
-      alert('Identity created');
-      window.location = '/home/' + namespace + '/' + identifier;
-    }
-    else alert('Cannot create identity');
-  });
+    .then((text) => {
+      if (parseInt(text) !== 0) {
+        alert('Identity created');
+        window.location = '/home/' + namespace + '/' + identifier;
+      } else {
+        alert('Cannot create identity');
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      alert('Cannot create identity');
+    });
 }
 window.onload = function() {
-  document.getElementById('createNewIdentity').addEventListener('click', createNewIdentity);
+  document
+    .getElementById('createNewIdentity')
+    .addEventListener('click', createNewIdentity);
 };

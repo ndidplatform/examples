@@ -99,23 +99,22 @@ export const createIdpResponse = async ({
 };
 
 export async function createNewIdentity(data) {
-  let response = await fetch(`${apiServerAddress}/identity`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      namespace: data.namespace,
-      identifier: data.identifier,
-      secret: 'MAGIC',
-      accessor_type: 'awesome-type',
-      accessor_key: 'awesome-key',
-      accessor_id: 'some-awesome-accessor',
-    }),
-  });
-  let isSuccess = await response.text();
-  if (isSuccess === 'true') {
-    return db.addUser(data.namespace, data.identifier);
-  } else return 0;
+  try {
+    const response = await fetch(`${apiServerAddress}/identity`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw response;
+    }
+
+    return;
+  } catch (error) {
+    throw error;
+  }
 }
