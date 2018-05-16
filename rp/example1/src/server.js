@@ -108,6 +108,9 @@ ndidCallbackEvent.on('callback', function(referenceId, request, dataFromAS) {
       default:
         if(request.is_closed) eventName = 'closed';
         else if(request.is_timed_out) eventName = 'timeout';
+        else if(request.status === 'confirmed' && request.idpCountOk) {
+          eventName = 'success';
+        }
     }
     if (socket && eventName) {
       socket.emit(eventName, { referenceId });

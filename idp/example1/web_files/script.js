@@ -170,6 +170,7 @@ function createRequestButton(userId, requestId, action) {
         //return response;
         //return response.json();
         //window.location.reload();
+        //TODO handle when response failed (time out or close)
         fetchAndUpdateRequestList();
       })
       .then((json) => {
