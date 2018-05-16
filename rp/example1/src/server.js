@@ -106,8 +106,8 @@ ndidCallbackEvent.on('callback', function(referenceId, request, dataFromAS) {
         eventName = 'deny';
         break;
       default:
-        if(request.isClosed) eventName = 'closed';
-        else if(request.isTimeout) eventName = 'timeout';
+        if(request.is_closed) eventName = 'closed';
+        else if(request.is_timed_out) eventName = 'timeout';
     }
     if (socket && eventName) {
       socket.emit(eventName, { referenceId });
