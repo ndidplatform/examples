@@ -3,6 +3,7 @@ const socket = io('/');
 
 let requestId = null;
 let referenceId = null;
+let verified = false;
 
 const step1 = document.getElementById('step1');
 const step2 = document.getElementById('step2');
@@ -71,7 +72,8 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
     body: JSON.stringify({
       namespace: document.getElementById('namespace').value,
       identifier: document.getElementById('identifier').value,
-      withMockData
+      withMockData,
+      request_timeout: document.getElementById('timeout').value
     }),
   })
     .then((response) => {
@@ -109,9 +111,10 @@ socket.on('success', (data) => {
     circleLoader.classList.add('load-complete');
     loaderCheckmark.classList.add('draw');
     loaderCheckmark.style = 'display:block;';
+    verified = true;
 
     if(needData) {
-      step3.classList.remove('d-none')
+      step3.classList.remove('d-none');
       dataStatusElement.textContent = 'Waiting for data...';
     }
     
@@ -124,6 +127,34 @@ socket.on('deny', (data) => {
     circleLoader.classList.add('load-error');
     loaderCheckmark.classList.add('error');
     loaderCheckmark.style = 'display:block;';
+  }
+});
+
+function requestClosed(timeout) {
+  if(!verified) {
+    statusElement.textContent = timeout ? 'Verification Timeout!' : 'This request was manually closed.';
+    circleLoader.classList.add('load-error');
+    loaderCheckmark.classList.add('error');
+    loaderCheckmark.style = 'display:block;';
+  }
+  else {
+    dataStatusElement.textContent = timeout ? 'Data request Timeout!' : 'This request was manually closed.';
+    dataCircleLoader.classList.add('load-error');
+    dataLoaderCheckmark.classList.add('error');
+    dataLoaderCheckmark.style = 'display:block;';
+    dataDisplay.textContent = JSON.stringify('Did not received data in time.');
+  }
+}
+
+socket.on('closed', (data) => {
+  if (data.referenceId == referenceId) {
+    requestClosed(false);
+  }
+});
+
+socket.on('timeout', (data) => {
+  if (data.referenceId == referenceId) {
+    requestClosed(true);
   }
 });
 

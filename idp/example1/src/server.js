@@ -159,8 +159,10 @@ ws.on('connection', function(_socket) {
 ndidCallbackEvent.on('callback', (request) => {
   // Save request to local DB
   //db.saveRequest(db.getUserByCid(request.identifier).id, request);
+  let user = db.getUserByIdentifier(request.namespace, request.identifier);
+  if(!user) return;
   db.saveRequest(
-    db.getUserByIdentifier(request.namespace, request.identifier).id,
+    user.id,
     request
   );
   socket.emit('newRequest', request);

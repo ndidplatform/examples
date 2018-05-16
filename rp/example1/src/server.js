@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/createRequest', async (req, res) => {
-  const { namespace, identifier, withMockData } = req.body;
+  const { namespace, identifier, withMockData, request_timeout } = req.body;
 
   const referenceId = (Math.floor(Math.random() * 100000 + 1)).toString();
 
@@ -55,7 +55,7 @@ app.post('/createRequest', async (req, res) => {
       min_ial: 1.1,
       min_aal: 1,
       min_idp: 1,
-      request_timeout: 259200,
+      request_timeout: request_timeout ? parseInt(request_timeout) : 86400,
     });
     res.status(200).send({ requestId: request.requestId, referenceId });
   } catch (error) {
@@ -96,15 +96,21 @@ ws.on('connection', function(_socket) {
 });
 
 ndidCallbackEvent.on('callback', function(referenceId, request, dataFromAS) {
+  let eventName;
   if(request) {
-    if (request.status === 'completed') {
-      if (socket) {
-        socket.emit('success', { referenceId });
-      }
-    } else if (request.status === 'rejected') {
-      if (socket) {
-        socket.emit('deny', { referenceId });
-      }
+    switch(request.status) {
+      case 'completed':
+        eventName = 'success';
+        break;
+      case 'rejected':
+        eventName = 'deny';
+        break;
+      default:
+        if(request.isClosed) eventName = 'closed';
+        else if(request.isTimeout) eventName = 'timeout';
+    }
+    if (socket && eventName) {
+      socket.emit(eventName, { referenceId });
     }
   }
   else if(dataFromAS) {
