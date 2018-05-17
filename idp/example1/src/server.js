@@ -106,6 +106,8 @@ app.post('/accept', async (req, res) => {
 
     res.status(200).end();
   } catch (error) {
+    //TODO handle when error with other reason than closed or timed out
+    db.removeRequest(requestId);
     res.status(500).end();
   }
 });
@@ -137,6 +139,8 @@ app.post('/reject', async (req, res) => {
 
     res.status(200).end();
   } catch (error) {
+    //TODO handle when error with other reason than closed or timed out
+    db.removeRequest(requestId);
     res.status(500).end();
   }
 });

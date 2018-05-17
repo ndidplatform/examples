@@ -64,7 +64,7 @@ export const saveRequest = (userId, request) => {
 };
 
 export const getRequest = (userId, requestId) => {
-  console.log(userId,requestId);
+  //console.log(userId,requestId);
   const requestWithUserId = db
     .get('requests')
     .find({ userId: parseInt(userId), request: { request_id: requestId } })

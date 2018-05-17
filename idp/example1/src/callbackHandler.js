@@ -30,7 +30,7 @@ app.use(bodyParser.json({ limit: '2mb' }));
 app.post('/idp/request', async (req, res) => {
   const { request } = req.body;
 
-  console.log(request);
+  //console.log(request);
   eventEmitter.emit('callback', request);
 
   res.status(200).end();
