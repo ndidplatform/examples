@@ -13,7 +13,7 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
         url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/as/service/bank_statement`,
         service_id: 'bank_statement',
         service_name: 'Bank statement description',
-        min_ial: 1,
+        min_ial: 1.1,
         min_aal: 1,
       });
       break;
@@ -33,7 +33,7 @@ const app = express();
 
 app.use(bodyParser.json({ limit: '2mb' }));
 
-app.post('/as/service', async (req, res) => {
+app.post('/as/service/bank_statement', async (req, res) => {
   //=================== Real business logic here ========================
   const { request } = req.body;
 

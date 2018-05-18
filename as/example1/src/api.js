@@ -32,7 +32,7 @@ export const setCallbackUrl = async ({
 }) => {
   try {
 
-    const response = await fetch(`${apiServerAddress}/as/callback`, {
+    const response = await fetch(`${apiServerAddress}/as/service/${service_id}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
