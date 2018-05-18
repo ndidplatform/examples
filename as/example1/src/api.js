@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 const apiServerAddress =
   process.env.API_SERVER_ADDRESS || 'http://localhost:8082';
 
-export const getCallbackUrl = async () => {
+/*export const getCallbackUrl = async () => {
   try {
     const response = await fetch(`${apiServerAddress}/as/callback`, {
       method: 'GET',
@@ -21,10 +21,17 @@ export const getCallbackUrl = async () => {
   } catch (error) {
     throw error;
   }
-};
+};*/
 
-export const setCallbackUrl = async ({ url }) => {
+export const setCallbackUrl = async ({
+  url,
+  service_id,
+  service_name,
+  min_ial,
+  min_aal,
+}) => {
   try {
+
     const response = await fetch(`${apiServerAddress}/as/callback`, {
       method: 'POST',
       headers: {
@@ -33,6 +40,10 @@ export const setCallbackUrl = async ({ url }) => {
       },
       body: JSON.stringify({
         url,
+        service_id,
+        service_name,
+        min_ial,
+        min_aal,
       }),
     });
 

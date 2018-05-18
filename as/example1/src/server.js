@@ -10,7 +10,11 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
   for (;;) {
     try {
       await API.setCallbackUrl({
-        url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/as/service`,
+        url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/as/service/bank_statement`,
+        service_id: 'bank_statement',
+        service_name: 'Bank statement description',
+        min_ial: 1,
+        min_aal: 1,
       });
       break;
     } catch (error) {
