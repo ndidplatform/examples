@@ -63,6 +63,10 @@ export const createIdpResponse = async ({
   accessor_id,
 }) => {
   try {
+
+    //TODO
+    //get secret, accessor_private_key, etc... from persistent
+
     const response = await fetch(`${apiServerAddress}/idp/response`, {
       method: 'POST',
       headers: {
@@ -112,6 +116,9 @@ export async function createNewIdentity(data) {
     if (!response.ok) {
       throw response;
     }
+
+    //TODO
+    //store secret, accessor_private_key, etc to persistent database
 
     return;
   } catch (error) {
