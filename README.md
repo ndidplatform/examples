@@ -4,9 +4,16 @@ Required
 - docker-compose [Install docker-compose](https://docs.docker.com/compose/install/)
 - git
 
+### Build
+
 ```
-cd docker
-./build-container.sh
-docker-compose up
+docker-compose -f docker/docker-compose.build.yml build
 ```
-Then you can run idp-example at port 8001 and rp-example at port 8002
+
+### Run
+
+```
+docker-compose -f docker/docker-compose.yml up
+```
+
+Then you can run idp-example at port 8000 and rp-example at port 8001
