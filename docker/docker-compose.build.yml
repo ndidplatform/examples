@@ -1,0 +1,7 @@
+version: "3"
+services: 
+  examples:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: ndidplatform/examples:latest
