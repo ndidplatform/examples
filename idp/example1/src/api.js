@@ -90,9 +90,9 @@ export const createIdpResponse = async ({
       throw response;
     }
 
-    let responseJson = await response.json();
+    // let responseJson = await response.json();
 
-    return responseJson;
+    // return responseJson;
   } catch (error) {
     throw error;
   }
