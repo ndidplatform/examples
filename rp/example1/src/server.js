@@ -47,7 +47,7 @@ app.post('/createRequest', async (req, res) => {
       data_request_list: withMockData ? [{ 
         service_id: 'bank_statement', 
         as_id_list: ['as1', 'as2', 'as3'],
-        count: 2,
+        count: 1,
         request_params: { 
           format: 'pdf' } 
       }] : [],
