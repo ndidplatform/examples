@@ -40,7 +40,9 @@ export const createRequest = async ({
     );
 
     if (!response.ok) {
-      throw response;
+      const errorJson = await response.json();
+
+      throw errorJson;
     }
 
     let responseJson = await response.json();

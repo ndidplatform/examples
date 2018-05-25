@@ -63,7 +63,7 @@ app.post('/identity', async (req, res) => {
   
     res.status(200).end();
   } catch (error) {
-    res.status(500).end();
+    res.status(500).json(error.error.message);
   }
 });
 
@@ -85,7 +85,7 @@ app.post('/accept', async (req, res) => {
   const user = db.getUser(userId);
   const savedRequest = db.getRequest(userId, requestId);
   if (!savedRequest) {
-    res.status(500).end();
+    res.status(500).json('Unknown request ID');
     return;
   }
 
@@ -108,7 +108,7 @@ app.post('/accept', async (req, res) => {
   } catch (error) {
     //TODO handle when error with other reason than closed or timed out
     db.removeRequest(requestId);
-    res.status(500).end();
+    res.status(500).json(error.error.message);
   }
 });
 
@@ -118,7 +118,7 @@ app.post('/reject', async (req, res) => {
   const user = db.getUser(userId);
   const savedRequest = db.getRequest(userId, requestId);
   if (!savedRequest) {
-    res.status(500).end();
+    res.status(500).json('Unknown request ID');
     return;
   }
 
@@ -141,7 +141,7 @@ app.post('/reject', async (req, res) => {
   } catch (error) {
     //TODO handle when error with other reason than closed or timed out
     db.removeRequest(requestId);
-    res.status(500).end();
+    res.status(500).json(error.error.message);
   }
 });
 

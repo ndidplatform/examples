@@ -93,7 +93,7 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
       referenceIdElement.textContent = 'Ref: ' + referenceId;
     })
     .catch ((error) => {
-      window.alert('Error requesting identity verification');
+      error.json().then((errorMessage) => window.alert(errorMessage));
     })
     .then(() => {
       verifyButton.textContent = 'Request Identity Verification';
