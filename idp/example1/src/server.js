@@ -63,7 +63,7 @@ app.post('/identity', async (req, res) => {
   
     res.status(200).end();
   } catch (error) {
-    res.status(500).json(error.error.message);
+    res.status(500).json(error.error ? error.error.message : error);
   }
 });
 
@@ -108,7 +108,7 @@ app.post('/accept', async (req, res) => {
   } catch (error) {
     //TODO handle when error with other reason than closed or timed out
     db.removeRequest(requestId);
-    res.status(500).json(error.error.message);
+    res.status(500).json(error.error ? error.error.message : error);
   }
 });
 
@@ -141,7 +141,7 @@ app.post('/reject', async (req, res) => {
   } catch (error) {
     //TODO handle when error with other reason than closed or timed out
     db.removeRequest(requestId);
-    res.status(500).json(error.error.message);
+    res.status(500).json(error.error ? error.error.message : error);
   }
 });
 
