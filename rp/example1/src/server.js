@@ -57,7 +57,7 @@ app.post('/createRequest', async (req, res) => {
       min_idp: 1,
       request_timeout: request_timeout ? parseInt(request_timeout) : 86400,
     });
-    res.status(200).json({ requestId: request.requestId, referenceId });
+    res.status(200).json({ requestId: request.request_id, referenceId });
   } catch (error) {
     res.status(500).json(error.error.message);
   }
