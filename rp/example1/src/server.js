@@ -57,7 +57,7 @@ app.post('/createRequest', async (req, res) => {
       min_idp: 1,
       request_timeout: request_timeout ? parseInt(request_timeout) : 86400,
     });
-    res.status(200).send({ requestId: request.requestId, referenceId });
+    res.status(200).send({ requestId: request.request_id, referenceId });
   } catch (error) {
     res.status(500).end();
   }
@@ -108,7 +108,7 @@ ndidCallbackEvent.on('callback', function(referenceId, request, dataFromAS) {
       default:
         if(request.is_closed) eventName = 'closed';
         else if(request.is_timed_out) eventName = 'timeout';
-        else if(request.status === 'confirmed' && request.idpCountOk) {
+        else if(request.status === 'confirmed' && request.idpCountOk && request.responsesValid) {
           eventName = 'success';
         }
     }
