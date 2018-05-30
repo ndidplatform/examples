@@ -14,10 +14,8 @@ export const getCallbackUrl = async () => {
 
     if (!response.ok) {
       if (response.status === 400 || response.status === 500) {
-        try {
-          const errorJson = await response.json();
-          throw errorJson;
-        } catch (error) {}
+        const errorJson = await response.json();
+        throw errorJson;
       }
       throw response;
     }
@@ -45,10 +43,8 @@ export const setCallbackUrl = async ({ url }) => {
 
     if (!response.ok) {
       if (response.status === 400 || response.status === 500) {
-        try {
-          const errorJson = await response.json();
-          throw errorJson;
-        } catch (error) {}
+        const errorJson = await response.json();
+        throw errorJson;
       }
       throw response;
     }
@@ -95,10 +91,8 @@ export const createIdpResponse = async ({
 
     if (!response.ok) {
       if (response.status === 400 || response.status === 500) {
-        try {
-          const errorJson = await response.json();
-          throw errorJson;
-        } catch (error) {}
+        const errorJson = await response.json();
+        throw errorJson;
       }
       throw response;
     }
@@ -124,10 +118,8 @@ export async function createNewIdentity(data) {
 
     if (!response.ok) {
       if (response.status === 400 || response.status === 500) {
-        try {
-          const errorJson = await response.json();
-          throw errorJson;
-        } catch (error) {}
+        const errorJson = await response.json();
+        throw errorJson;
       }
       throw response;
     }

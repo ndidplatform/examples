@@ -41,10 +41,8 @@ export const createRequest = async ({
 
     if (!response.ok) {
       if (response.status === 400 || response.status === 500) {
-        try {
-          const errorJson = await response.json();
-          throw errorJson;
-        } catch (error) {}
+        const errorJson = await response.json();
+        throw errorJson;
       }
       throw response;
     }
@@ -71,10 +69,8 @@ export const getRequest = async ({ request_id }) => {
 
     if (!response.ok) {
       if (response.status === 400 || response.status === 500) {
-        try {
-          const errorJson = await response.json();
-          throw errorJson;
-        } catch (error) {}
+        const errorJson = await response.json();
+        throw errorJson;
       }
       throw response;
     }

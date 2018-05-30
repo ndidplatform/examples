@@ -48,6 +48,10 @@ export const setCallbackUrl = async ({
     });
 
     if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
       throw response;
     }
 
