@@ -53,13 +53,17 @@ app.post('/identity', async (req, res) => {
     await API.createNewIdentity({
       namespace,
       identifier,
-      secret: 'MAGIC',
+      //secret: 'MAGIC',
       accessor_type: 'awesome-type',
       accessor_key: 'awesome-key',
       accessor_id: 'some-awesome-accessor',
+      accessor_group_id: 'not-so-awesome-group-id',
     });
   
     db.addUser(namespace, identifier);
+    //TODO
+    //calculate secret
+    //store accessor details and secret to local db
   
     res.status(200).end();
   } catch (error) {
@@ -78,6 +82,10 @@ app.get('/requests/:namespace/:identifier', async function(req, res) {
 
   res.status(200).send(requests);
 });
+
+//=============================================================================
+//TODO query secret, accessor details and use to response accept/reject
+//=============================================================================
 
 app.post('/accept', async (req, res) => {
   const { userId, requestId } = req.body;
