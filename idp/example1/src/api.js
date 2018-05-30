@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import * as db from './db';
 
 const apiServerAddress =
   process.env.API_SERVER_ADDRESS || 'http://localhost:8081';
@@ -14,6 +13,10 @@ export const getCallbackUrl = async () => {
     });
 
     if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
       throw response;
     }
 
@@ -39,6 +42,10 @@ export const setCallbackUrl = async ({ url }) => {
     });
 
     if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
       throw response;
     }
 
@@ -83,9 +90,9 @@ export const createIdpResponse = async ({
     });
 
     if (!response.ok) {
-      if (response.status === 400) {
-        let responseJson = await response.json();
-        console.error(responseJson);
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
       }
       throw response;
     }
@@ -110,6 +117,10 @@ export async function createNewIdentity(data) {
     });
 
     if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
       throw response;
     }
 
