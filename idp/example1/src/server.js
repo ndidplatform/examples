@@ -11,6 +11,10 @@ import * as API from './api';
 import { eventEmitter as ndidCallbackEvent } from './callbackHandler';
 
 import * as db from './db';
+import fs from 'fs';
+import crypto from 'crypto';
+import { spawnSync } from 'child_process';
+import bignum from 'bignum';
 
 process.on('unhandledRejection', function(reason, p) {
   console.error('Unhandled Rejection:', p, '\nreason:', reason.stack || reason);
@@ -55,21 +59,81 @@ app.post('/identity', async (req, res) => {
       identifier,
       //secret: 'MAGIC',
       accessor_type: 'awesome-type',
-      accessor_key: 'awesome-key',
+      accessor_public_key: fs.readFileSync('./dev_user_key/user.pub','utf8'),
       accessor_id: 'some-awesome-accessor',
       accessor_group_id: 'not-so-awesome-group-id',
     });
   
     db.addUser(namespace, identifier);
-    //TODO
-    //calculate secret
-    //store accessor details and secret to local db
+    calculateSecret(namespace,identifier);
   
     res.status(200).end();
   } catch (error) {
     res.status(500).json(error.error ? error.error.message : error);
   }
 });
+
+function extractModulusFromPublicKey(publicKey) {
+console.log(publicKey)
+  let fileName = 'tmpNDIDFile' + Date.now();
+  fs.writeFileSync(fileName,publicKey);
+console.log('Written')
+  let result = spawnSync('openssl',('rsa -pubin -in ' + fileName + ' -text -noout').split(' '));
+console.log(result.stderr.toString())
+  let resultStr = result.stdout.toString().split(':').join('').split(' ').join('');
+console.log(resultStr)
+  let modStr = resultStr.split('\n').splice(2);
+  modStr = modStr.splice(0,modStr.length-2).join('');
+console.log('mod',modStr)
+
+  fs.unlink(fileName);
+  return stringToBigInt(Buffer.from(modStr,'hex').toString());
+}
+
+function stringToBigInt(string) {
+  return bignum.fromBuffer(Buffer.from(string,'utf8'));
+}
+
+function euclideanGCD(a, b) {
+  if( a.eq(bignum('0')) ) return [b, bignum('0'), bignum('1')];
+  let [g, y, x] = euclideanGCD(b.mod(a),a);
+  return [
+    g, 
+    x.sub(
+      b.sub(
+        b.mod(a)
+      )
+      .div(a)
+      .mul(y)
+    ),
+    y
+  ];
+}
+
+function moduloInverse(a, modulo) {
+  let [g, x, y] = euclideanGCD(a, modulo);
+  if(!g.eq(1)) throw 'No modular inverse';
+  return x%modulo;
+}
+
+function inverseHash(hash) {
+  
+  //extract mod
+  let n = extractModulusFromPublicKey(fs.readFileSync('./dev_user_key/user.pub','utf8'));
+  let hashBigInt = stringToBigInt(hash);
+  let inv = moduloInverse(hashBigInt, n);
+  fs.writeFileSync('./dev_user_key/invHash',Buffer.from(inv.toString(),'utf8').toString('base64'));
+
+}
+
+function calculateSecret(namespace, identifier) {
+  let sid = namespace + ':' + identifier;
+  const hash = crypto.createHash('sha256');
+  hash.update(sid);
+  const hashedSid = hash.digest('hex');
+  const invHash = inverseHash(hashedSid);
+  spawnSync('openssl','rsautl -sign -in ./dev_user_key/invHash -inkey ./dev_user_key/user -out ./dev_user_key/secret'.split(' '));
+}
 
 app.get('/home/:namespace/:identifier', (req, res) => {
   res.sendFile(path.join(__dirname, '../web_files/index.html'));
@@ -104,10 +168,10 @@ app.post('/accept', async (req, res) => {
       identifier: user.identifier,
       ial: 3,
       aal: 3,
-      secret: '<secret>',
+      secret: fs.readFileSync('./dev_user_key/secret').toString('base64'),
       status: 'accept',
       signature: '<signature>',
-      accessor_id: '<accessor_id>',
+      accessor_id: 'some-awesome-accessor',
     });
 
     db.removeRequest(requestId);
