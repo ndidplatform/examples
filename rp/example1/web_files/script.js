@@ -123,6 +123,15 @@ socket.on('success', (data) => {
 
 socket.on('deny', (data) => {
   if (data.referenceId == referenceId) {
+    statusElement.textContent = 'Verification Rejected!';
+    circleLoader.classList.add('load-error');
+    loaderCheckmark.classList.add('error');
+    loaderCheckmark.style = 'display:block;';
+  }
+});
+
+socket.on('invalid', (data) => {
+  if (data.referenceId == referenceId) {
     statusElement.textContent = 'Verification Failed!';
     circleLoader.classList.add('load-error');
     loaderCheckmark.classList.add('error');

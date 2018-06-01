@@ -98,19 +98,22 @@ ws.on('connection', function(_socket) {
 ndidCallbackEvent.on('callback', function(referenceId, request, dataFromAS) {
   let eventName;
   if(request) {
-    switch(request.status) {
-      case 'completed':
-        eventName = 'success';
-        break;
-      case 'rejected':
-        eventName = 'deny';
-        break;
-      default:
-        if(request.is_closed) eventName = 'closed';
-        else if(request.is_timed_out) eventName = 'timeout';
-        else if(request.status === 'confirmed' && request.idpCountOk && request.responsesValid) {
+    if(!request.responsesValid) eventName = 'invalid';
+    else {
+      switch(request.status) {
+        case 'completed':
           eventName = 'success';
-        }
+          break;
+        case 'rejected':
+          eventName = 'deny';
+          break;
+        default:
+          if(request.is_closed) eventName = 'closed';
+          else if(request.is_timed_out) eventName = 'timeout';
+          else if(request.status === 'confirmed' && request.idpCountOk) {
+            eventName = 'success';
+          }
+      }
     }
     if (socket && eventName) {
       socket.emit(eventName, { referenceId });
