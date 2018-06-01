@@ -18,7 +18,7 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
       });
       break;
     } catch (error) {
-      if (error.error.code === 25005) break;
+      if (error.error && error.error.code === 25005) break;
       console.error('Error setting callback URL at NDID API');
     }
     // simple wait
