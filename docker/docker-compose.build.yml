@@ -1,7 +1,10 @@
-version: "3"
+version: "3.3"
 services: 
   examples:
     build:
       context: ../
       dockerfile: docker/Dockerfile
+      labels:
+        build.commit: ${BUILD_COMMIT}
+        build.date: ${BUILD_DATE}
     image: ndidplatform/examples:latest
