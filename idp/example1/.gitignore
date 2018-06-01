@@ -1,5 +1,6 @@
 # Local DB Mockup
 db.json
+dev_user_key/*
 
 # production
 /build

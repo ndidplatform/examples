@@ -70,3 +70,11 @@ export function calculateSecret(namespace, identifier,privateKey) {
   let secret = powerMod(invHash,d,n);
   return secret.toBuffer().toString('base64');
 }
+
+export function genNewKeyPair(sid) {
+  let pathSid = './dev_user_key/' + sid;
+  let gen = spawnSync('ssh-keygen', ['-t', 'rsa', '-N', '', '-f', pathSid, '-b', '2048']);
+  //console.log(gen.stderr.toString());
+  let encode = spawnSync('openssl', ['rsa', '-in', pathSid, '-pubout', '-out', pathSid + '.pub']);
+  //console.log(encode.stderr.toString());
+}
