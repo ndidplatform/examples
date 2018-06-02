@@ -77,4 +77,8 @@ export function genNewKeyPair(sid) {
   //console.log(gen.stderr.toString());
   let encode = spawnSync('openssl', ['rsa', '-in', pathSid, '-pubout', '-out', pathSid + '.pub']);
   //console.log(encode.stderr.toString());
+
+  if (gen.status !== 0 || encode.status !== 0) {
+    throw new Error("Failed in genNewKeyPair()");
+  }
 }
