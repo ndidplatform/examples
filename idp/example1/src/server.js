@@ -118,8 +118,7 @@ app.post('/accept', async (req, res) => {
       aal: 3,
       secret: fs.readFileSync('./dev_user_key/secret_' + sid,'utf8'),
       status: 'accept',
-      //TODO implement real signature
-      signature: '<signature>',
+      signature: zkProof.signMessage(savedRequest.request_message, './dev_user_key/' + sid),
       accessor_id: 'some-awesome-accessor-for-' + sid,
     });
 
@@ -138,6 +137,7 @@ app.post('/reject', async (req, res) => {
 
   const user = db.getUser(userId);
   const savedRequest = db.getRequest(userId, requestId);
+  const sid = user.namespace + ':' + user.identifier;
   if (!savedRequest) {
     res.status(500).json('Unknown request ID');
     return;
@@ -146,14 +146,14 @@ app.post('/reject', async (req, res) => {
   try {
     await API.createIdpResponse({
       request_id: requestId,
-      namespace: 'cid',
+      namespace: user.namespace,
       identifier: user.identifier,
       ial: 1.2,
       aal: 2.1,
-      secret: '<secret>',
+      secret: fs.readFileSync('./dev_user_key/secret_' + sid,'utf8'),
       status: 'reject',
-      signature: '<signature>',
-      accessor_id: '<accessor_id>',
+      signature: zkProof.signMessage(savedRequest.request_message, './dev_user_key/' + sid),
+      accessor_id: 'some-awesome-accessor-for-' + sid,
     });
 
     db.removeRequest(requestId);

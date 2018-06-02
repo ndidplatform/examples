@@ -78,3 +78,11 @@ export function genNewKeyPair(sid) {
   let encode = spawnSync('openssl', ['rsa', '-in', pathSid, '-pubout', '-out', pathSid + '.pub']);
   //console.log(encode.stderr.toString());
 }
+
+export function signMessage(messageToSign, privateKeyPath) {
+  let result = spawnSync('openssl',
+    ['dgst','-sha256','-sign',privateKeyPath],
+    { input: messageToSign }
+  );
+  return result.stdout.toString('base64');
+}
