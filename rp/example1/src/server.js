@@ -102,13 +102,12 @@ ws.on('connection', function(_socket) {
 
 ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
   const { type, ...other } = callbackData;
-
+console.log('>>>', callbackData)
   if (type === 'request_event') {
     const request = other;
-    if (!request.responsesValid) eventName = 'invalid';
     let eventName;
     if (request) {
-      if (!request.responsesValid) {
+      if (!request.responses_valid) {
         eventName = 'invalid';
       } else {
         switch (request.status) {
