@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 app.post('/createRequest', async (req, res) => {
   const { namespace, identifier, withMockData, request_timeout } = req.body;
 
-  const referenceId = (Math.floor(Math.random() * 100000 + 1)).toString();
+  const referenceId = Math.floor(Math.random() * 100000 + 1).toString();
 
   try {
     const request = await API.createRequest({
@@ -44,13 +44,18 @@ app.post('/createRequest', async (req, res) => {
       reference_id: referenceId,
       idp_list: [],
       callback_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/rp/request/${referenceId}`,
-      data_request_list: withMockData ? [{ 
-        service_id: 'bank_statement', 
-        as_id_list: ['as1', 'as2', 'as3'],
-        count: 1,
-        request_params: { 
-          format: 'pdf' } 
-      }] : [],
+      data_request_list: withMockData
+        ? [
+            {
+              service_id: 'bank_statement',
+              as_id_list: ['as1', 'as2', 'as3'],
+              count: 1,
+              request_params: {
+                format: 'pdf',
+              },
+            },
+          ]
+        : [],
       request_message: 'dummy Request Message',
       min_ial: 1.1,
       min_aal: 1,
@@ -95,42 +100,53 @@ ws.on('connection', function(_socket) {
   socket = _socket;
 });
 
-ndidCallbackEvent.on('callback', function(referenceId, request, dataFromAS) {
-  let eventName;
-  if(request) {
-    switch(request.status) {
-      case 'completed':
-        eventName = 'success';
-        break;
-      case 'rejected':
-        eventName = 'deny';
-        break;
-      default:
-        if(request.is_closed) eventName = 'closed';
-        else if(request.is_timed_out) eventName = 'timeout';
-        else if(request.status === 'confirmed' && request.idpCountOk) {
+ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
+  const { type, ...other } = callbackData;
+
+  if (type === 'request_event') {
+    const request = other;
+    let eventName;
+    if (request) {
+      switch (request.status) {
+        case 'completed': {
           eventName = 'success';
+          getAndCallbackDataFromAS({
+            referenceId,
+            requestId: request.request_id,
+          });
+          break;
         }
+        case 'rejected':
+          eventName = 'deny';
+          break;
+        default:
+          if (request.is_closed) eventName = 'closed';
+          else if (request.is_timed_out) eventName = 'timeout';
+          else if (
+            request.status === 'confirmed' &&
+            request.min_idp === request.answered_idp_count
+          ) {
+            eventName = 'success';
+          }
+      }
+      if (socket && eventName) {
+        socket.emit(eventName, { referenceId });
+      }
     }
-    if (socket && eventName) {
-      socket.emit(eventName, { referenceId });
-    }
-  }
-  else if(dataFromAS) {
-    if(socket) {
-      socket.emit('dataFromAS', {
-        referenceId,
-        dataFromAS
-      });
-    }
+  } else if (type === 'error') {
+    // TODO: callback when using async createRequest and got error
   }
 });
 
-// ndidCallbackEvent.event.on('error', function(event) {
-//   if (socket) {
-//     socket.emit('fail', { requestId: event.requestId });
-//   }
-// });
+async function getAndCallbackDataFromAS({ referenceId, requestId }) {
+  const dataFromAS = await API.getDataFromAS({ requestId });
+  if (socket) {
+    socket.emit('dataFromAS', {
+      referenceId,
+      dataFromAS,
+    });
+  }
+}
 
 server.listen(WEB_SERVER_PORT);
 

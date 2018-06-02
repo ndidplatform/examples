@@ -12,11 +12,11 @@ const app = express();
 app.use(bodyParser.json({ limit: '2mb' }));
 
 app.post('/rp/request/:referenceId', async (req, res) => {
-  const { request, data } = req.body;
+  const callbackData = req.body;
   const { referenceId } = req.params; 
 
   //console.log(request);
-  eventEmitter.emit('callback', referenceId, request, data);
+  eventEmitter.emit('callback', referenceId, callbackData);
 
   res.status(200).end();
 });

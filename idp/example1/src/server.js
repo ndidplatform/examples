@@ -57,6 +57,7 @@ app.post('/identity', async (req, res) => {
       accessor_type: 'awesome-type',
       accessor_key: 'awesome-key',
       accessor_id: 'some-awesome-accessor',
+      ial: 2.3,
     });
   
     db.addUser(namespace, identifier);

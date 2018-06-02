@@ -55,10 +55,38 @@ export const createRequest = async ({
   }
 };
 
-export const getRequest = async ({ request_id }) => {
+export const getRequest = async ({ requestId }) => {
   try {
     const response = await fetch(
-      `${apiServerAddress}/rp/requests/${request_id}`,
+      `${apiServerAddress}/rp/requests/${requestId}`,
+      {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
+      throw response;
+    }
+
+    let responseJson = await response.json();
+
+    return responseJson;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getDataFromAS = async ({ requestId }) => {
+  try {
+    const response = await fetch(
+      `${apiServerAddress}/rp/requests/data/${requestId}`,
       {
         method: 'GET',
         headers: {
