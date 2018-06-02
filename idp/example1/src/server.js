@@ -74,7 +74,7 @@ app.post('/identity', async (req, res) => {
       accessor_public_key,
       accessor_id: 'some-awesome-accessor-for-' + sid,
       accessor_group_id: 'not-so-awesome-group-id-for-' + sid,
-      ial: 3
+      ial: 2.3
     });
   
     db.addUser(namespace, identifier);

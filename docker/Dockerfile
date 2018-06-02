@@ -4,14 +4,18 @@ COPY idp/example1/package*.json /examples/idp/
 COPY rp/example1/package*.json /examples/rp/
 COPY as/example1/package*.json /examples/as/
 
-RUN cd /examples/idp && npm install && \
+RUN apk update && apk add --virtual .build-deps python make g++ && \
+    cd /examples/idp && npm install && \
     cd /examples/rp && npm install && \
-    cd /examples/as && npm install
+    cd /examples/as && npm install && \
+    apk del .build-deps
 
 
 FROM node:8-alpine
 
 ENV TERM=xterm-256color
+
+RUN apk update && apk add --no-cache bash openssl
 
 WORKDIR /examples
 
@@ -24,7 +28,5 @@ COPY docker/start-node.sh /examples
 COPY --from=build /examples/idp/node_modules /examples/idp/node_modules
 COPY --from=build /examples/rp/node_modules /examples/rp/node_modules
 COPY --from=build /examples/as/node_modules /examples/as/node_modules
-
-RUN apk update && apk add --no-cache bash
 
 ENTRYPOINT ["./start-node.sh"]
