@@ -105,29 +105,34 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
 
   if (type === 'request_event') {
     const request = other;
+    if (!request.responsesValid) eventName = 'invalid';
     let eventName;
     if (request) {
-      switch (request.status) {
-        case 'completed': {
-          eventName = 'success';
-          getAndCallbackDataFromAS({
-            referenceId,
-            requestId: request.request_id,
-          });
-          break;
-        }
-        case 'rejected':
-          eventName = 'deny';
-          break;
-        default:
-          if (request.is_closed) eventName = 'closed';
-          else if (request.is_timed_out) eventName = 'timeout';
-          else if (
-            request.status === 'confirmed' &&
-            request.min_idp === request.answered_idp_count
-          ) {
+      if (!request.responsesValid) {
+        eventName = 'invalid';
+      } else {
+        switch (request.status) {
+          case 'completed': {
             eventName = 'success';
+            getAndCallbackDataFromAS({
+              referenceId,
+              requestId: request.request_id,
+            });
+            break;
           }
+          case 'rejected':
+            eventName = 'deny';
+            break;
+          default:
+            if (request.is_closed) eventName = 'closed';
+            else if (request.is_timed_out) eventName = 'timeout';
+            else if (
+              request.status === 'confirmed' &&
+              request.min_idp === request.answered_idp_count
+            ) {
+              eventName = 'success';
+            }
+        }
       }
       if (socket && eventName) {
         socket.emit(eventName, { referenceId });

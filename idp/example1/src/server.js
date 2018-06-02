@@ -11,6 +11,13 @@ import * as API from './api';
 import { eventEmitter as ndidCallbackEvent } from './callbackHandler';
 
 import * as db from './db';
+import fs from 'fs';
+import * as zkProof from './zkProof';
+import { spawnSync } from 'child_process';
+
+//===== INIT ========
+spawnSync('mkdir',['-p','./dev_user_key/']);
+//===================
 
 process.on('unhandledRejection', function(reason, p) {
   console.error('Unhandled Rejection:', p, '\nreason:', reason.stack || reason);
@@ -50,20 +57,31 @@ app.get('/identity', (req, res) => {
 app.post('/identity', async (req, res) => {
   const { namespace, identifier } = req.body;
   try {
+
+    let sid = namespace + ':' + identifier;
+    //gen new key pair
+    zkProof.genNewKeyPair(sid);
+
+    let accessor_public_key = fs.readFileSync('./dev_user_key/' + sid + '.pub','utf8');
+    let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync('./dev_user_key/' + sid,'utf8'));
+    fs.writeFileSync('./dev_user_key/secret_' + sid, secret, 'utf8');
+
     await API.createNewIdentity({
       namespace,
       identifier,
-      secret: 'MAGIC',
+      //secret: 'MAGIC',
       accessor_type: 'awesome-type',
-      accessor_key: 'awesome-key',
-      accessor_id: 'some-awesome-accessor',
-      ial: 2.3,
+      accessor_public_key,
+      accessor_id: 'some-awesome-accessor-for-' + sid,
+      accessor_group_id: 'not-so-awesome-group-id-for-' + sid,
+      ial: 2.3
     });
   
     db.addUser(namespace, identifier);
   
     res.status(200).end();
   } catch (error) {
+    console.error(error);
     res.status(500).json(error.error ? error.error.message : error);
   }
 });
@@ -85,6 +103,7 @@ app.post('/accept', async (req, res) => {
 
   const user = db.getUser(userId);
   const savedRequest = db.getRequest(userId, requestId);
+  const sid = user.namespace + ':' + user.identifier;
   if (!savedRequest) {
     res.status(500).json('Unknown request ID');
     return;
@@ -93,14 +112,15 @@ app.post('/accept', async (req, res) => {
   try {
     await API.createIdpResponse({
       request_id: requestId,
-      namespace: 'cid',
+      namespace: user.namespace,
       identifier: user.identifier,
       ial: 3,
       aal: 3,
-      secret: '<secret>',
+      secret: fs.readFileSync('./dev_user_key/secret_' + sid,'utf8'),
       status: 'accept',
+      //TODO implement real signature
       signature: '<signature>',
-      accessor_id: '<accessor_id>',
+      accessor_id: 'some-awesome-accessor-for-' + sid,
     });
 
     db.removeRequest(requestId);
