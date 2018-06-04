@@ -1,4 +1,6 @@
 function createNewIdentity() {
+  document.getElementById('createNewIdentity').disabled = true;
+  document.getElementById('createNewIdentity').innerHTML = 'Creating...';
   let namespace = document.getElementById('namespace').value;
   let identifier = document.getElementById('identifier').value;
   fetch('/identity', {
@@ -23,11 +25,15 @@ function createNewIdentity() {
         window.location = '/home/' + namespace + '/' + identifier;
       } else {
         alert('Cannot create identity');
+        document.getElementById('createNewIdentity').disabled = false;
+        document.getElementById('createNewIdentity').innerHTML = 'Create';
       }
     })
     .catch((error) => {
       console.error(error);
       alert('Cannot create identity');
+      document.getElementById('createNewIdentity').disabled = false;
+      document.getElementById('createNewIdentity').innerHTML = 'Create';
     });
 }
 window.onload = function() {
