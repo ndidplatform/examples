@@ -2,12 +2,19 @@ html, body {
   height: 100%;
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+}
+
 .container {
-  height: calc(100% - 56px);
+  flex: 1 1 auto;
+  margin-top: 56px;
+  display: flex;
 }
 
 .content {
-  height: 100%;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;

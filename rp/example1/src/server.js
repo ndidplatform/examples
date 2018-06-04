@@ -102,40 +102,35 @@ ws.on('connection', function(_socket) {
 
 ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
   const { type, ...other } = callbackData;
-console.log('>>>', callbackData)
+
   if (type === 'request_event') {
     const request = other;
-    let eventName;
-    if (request) {
-      if (!request.responses_valid) {
-        eventName = 'invalid';
-      } else {
-        switch (request.status) {
-          case 'completed': {
-            eventName = 'success';
-            getAndCallbackDataFromAS({
-              referenceId,
-              requestId: request.request_id,
-            });
-            break;
-          }
-          case 'rejected':
-            eventName = 'deny';
-            break;
-          default:
-            if (request.is_closed) eventName = 'closed';
-            else if (request.is_timed_out) eventName = 'timeout';
-            else if (
-              request.status === 'confirmed' &&
-              request.min_idp === request.answered_idp_count
-            ) {
-              eventName = 'success';
-            }
-        }
+
+    if (request.latest_response_valid === false) {
+      socket && socket.emit('invalid', { referenceId });
+      return;
+    } else if (request.is_closed) {
+      socket && socket.emit('closed', { referenceId });
+      return;
+    } else if (request.is_timed_out) {
+      socket && socket.emit('timeout', { referenceId });
+      return;
+    } else {
+      if (
+        request.status === 'completed' &&
+        request.service_list &&
+        request.service_list.length > 0
+      ) {
+        getAndCallbackDataFromAS({
+          referenceId,
+          requestId: request.request_id,
+        });
       }
-      if (socket && eventName) {
-        socket.emit(eventName, { referenceId });
-      }
+      socket &&
+        socket.emit('request_event', {
+          referenceId,
+          ...request,
+        });
     }
   } else if (type === 'error') {
     // TODO: callback when using async createRequest and got error

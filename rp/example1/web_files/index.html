@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/style.css">
   </head>
   <body>
-    <nav class="navbar navbar-light bg-light">
+    <nav class="navbar fixed-top navbar-light bg-light">
       <span class="navbar-brand mb-0 h1">RP-1</span>
     </nav>
     
@@ -18,7 +18,7 @@
 
       <div class="content">
 
-        <div class="card" style="width: 42rem;">
+        <div class="card" style="width: 42rem; margin: auto;">
           <div class="card-body">
             <h5 class="card-title">Identity Verification</h5>
 
@@ -57,6 +57,8 @@
                 <div id="status"></div>
               </div>
 
+              <div>IdP responses: <span id="idp-response-count"></span></div>
+
             </div>
 
             <div id="step3" class="d-none">
@@ -68,6 +70,11 @@
                 </div>
                 <div id="dataStatus"></div>
                 <div id="dataDisplay"></div>
+              </div>
+
+              <div id="as-response">
+                AS responses:
+                <div id="as-response-count"></div>
               </div>
             </div>
 

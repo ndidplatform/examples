@@ -27,7 +27,13 @@ const verifyButton = document.getElementById('verify');
 verifyButton.addEventListener('click', (event) => sendVerifyRequest());
 
 const verifyWithMockDataButton = document.getElementById('verifyWithMockData');
-verifyWithMockDataButton.addEventListener('click', (event) => sendVerifyRequest(true));
+verifyWithMockDataButton.addEventListener('click', (event) =>
+  sendVerifyRequest(true)
+);
+
+const idpResponseCount = document.getElementById('idp-response-count');
+const asResponse = document.getElementById('as-response');
+const asResponseCount = document.getElementById('as-response-count');
 
 let needData = false;
 // const verifyHideSourceRpButton = document.getElementById('verifyHideSourceRp');
@@ -56,11 +62,14 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
   // const selectedIdps = selectedIdpElements.filter(ele => ele.checked === true).map(ele => ele.dataset.id);
 
   //if (selectedIdps.length > 0) {
-  
+
   // statusElement.style = '';
   needData = withMockData;
+  if (!needData) {
+    asResponse.classList.add('d-none');
+  }
   verifyButton.textContent = 'Requesting...';
-  if(withMockData) verifyButton.disabled = true;
+  if (withMockData) verifyButton.disabled = true;
   else verifyWithMockDataButton.disabled = true;
 
   fetch('/createRequest', {
@@ -73,7 +82,7 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
       namespace: document.getElementById('namespace').value,
       identifier: document.getElementById('identifier').value,
       withMockData,
-      request_timeout: document.getElementById('timeout').value
+      request_timeout: document.getElementById('timeout').value,
     }),
   })
     .then((response) => {
@@ -92,7 +101,7 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
       requestIdElement.textContent = 'Request ID: ' + requestId;
       referenceIdElement.textContent = 'Ref: ' + referenceId;
     })
-    .catch ((error) => {
+    .catch((error) => {
       error.json().then((errorMessage) => window.alert(errorMessage));
     })
     .then(() => {
@@ -105,28 +114,44 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
   }*/
 }
 
-socket.on('success', (data) => {
-  if (data.referenceId == referenceId) {
-    statusElement.textContent = 'Verification Successful!';
-    circleLoader.classList.add('load-complete');
-    loaderCheckmark.classList.add('draw');
-    loaderCheckmark.style = 'display:block;';
-    verified = true;
-
-    if(needData) {
-      step3.classList.remove('d-none');
-      dataStatusElement.textContent = 'Waiting for data...';
-    }
-    
+socket.on('request_event', (event) => {
+  idpResponseCount.textContent = `${event.answered_idp_count}/${event.min_idp}`;
+  if (needData) {
+    asResponseCount.innerHTML = event.service_list.reduce(
+      (HtmlString, service) => {
+        return (
+          HtmlString +
+          `<div>${service.service_id}: ${service.answered_count}/${
+            service.count
+          }</div>`
+        );
+      },
+      ''
+    );
   }
-});
+  if (
+    event.status === 'completed' ||
+    (event.status === 'confirmed' && event.min_idp === event.answered_idp_count)
+  ) {
+    if (event.referenceId == referenceId) {
+      statusElement.textContent = 'Verification Successful!';
+      circleLoader.classList.add('load-complete');
+      loaderCheckmark.classList.add('draw');
+      loaderCheckmark.style = 'display:block;';
+      verified = true;
 
-socket.on('deny', (data) => {
-  if (data.referenceId == referenceId) {
-    statusElement.textContent = 'Verification Rejected!';
-    circleLoader.classList.add('load-error');
-    loaderCheckmark.classList.add('error');
-    loaderCheckmark.style = 'display:block;';
+      if (needData) {
+        step3.classList.remove('d-none');
+        dataStatusElement.textContent = 'Waiting for data...';
+      }
+    }
+  } else if (event.status === 'rejected') {
+    if (event.referenceId == referenceId) {
+      statusElement.textContent = 'Verification Rejected!';
+      circleLoader.classList.add('load-error');
+      loaderCheckmark.classList.add('error');
+      loaderCheckmark.style = 'display:block;';
+    }
   }
 });
 
@@ -140,14 +165,17 @@ socket.on('invalid', (data) => {
 });
 
 function requestClosed(timeout) {
-  if(!verified) {
-    statusElement.textContent = timeout ? 'Verification Timeout!' : 'This request was manually closed.';
+  if (!verified) {
+    statusElement.textContent = timeout
+      ? 'Verification Timeout!'
+      : 'This request was manually closed.';
     circleLoader.classList.add('load-error');
     loaderCheckmark.classList.add('error');
     loaderCheckmark.style = 'display:block;';
-  }
-  else {
-    dataStatusElement.textContent = timeout ? 'Data request Timeout!' : 'This request was manually closed.';
+  } else {
+    dataStatusElement.textContent = timeout
+      ? 'Data request Timeout!'
+      : 'This request was manually closed.';
     dataCircleLoader.classList.add('load-error');
     dataLoaderCheckmark.classList.add('error');
     dataLoaderCheckmark.style = 'display:block;';
