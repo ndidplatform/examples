@@ -201,6 +201,11 @@ socket.on('dataFromAS', (data) => {
     dataCircleLoader.classList.add('load-complete');
     dataLoaderCheckmark.classList.add('draw');
     dataLoaderCheckmark.style = 'display:block;';
+    console.log(data.dataFromAS);
+    for(let i = 0 ; i < data.dataFromAS.length ; i++) {
+      //too long to display
+      delete data.dataFromAS[i].source_signature;
+    }
     dataDisplay.textContent = JSON.stringify(data.dataFromAS);
   }
 });
