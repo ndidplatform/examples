@@ -36,6 +36,8 @@ const asResponse = document.getElementById('as-response');
 const asResponseCount = document.getElementById('as-response-count');
 
 let needData = false;
+let gotData = false;
+let allDataSigned = false;
 // const verifyHideSourceRpButton = document.getElementById('verifyHideSourceRp');
 // verifyHideSourceRpButton.addEventListener('click', (event) => sendVerifyRequest(true));
 
@@ -65,6 +67,8 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
 
   // statusElement.style = '';
   needData = withMockData;
+  gotData = false;
+  allDataSigned = false;
   if (!needData) {
     asResponse.classList.add('d-none');
   }
@@ -115,8 +119,10 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
 }
 
 socket.on('request_event', (event) => {
-  idpResponseCount.textContent = `${event.answered_idp_count}/${event.min_idp}`;
-  if (needData) {
+  if (event.referenceId == referenceId) {
+    idpResponseCount.textContent = `${event.answered_idp_count}/${
+      event.min_idp
+    }`;
     asResponseCount.innerHTML = event.service_list.reduce(
       (HtmlString, service) => {
         return (
@@ -128,12 +134,21 @@ socket.on('request_event', (event) => {
       },
       ''
     );
-  }
-  if (
-    event.status === 'completed' ||
-    (event.status === 'confirmed' && event.min_idp === event.answered_idp_count)
-  ) {
-    if (event.referenceId == referenceId) {
+    if (event.status === 'completed' && event.service_list.length > 0) {
+      allDataSigned = true;
+
+      if (gotData) {
+        dataStatusElement.textContent = 'Data Received and Signed by AS!';
+        dataCircleLoader.classList.add('load-complete');
+        dataLoaderCheckmark.classList.add('draw');
+        dataLoaderCheckmark.style = 'display:block;';
+      }
+    }
+    if (
+      event.status === 'completed' ||
+      (event.status === 'confirmed' &&
+        event.min_idp === event.answered_idp_count)
+    ) {
       statusElement.textContent = 'Verification Successful!';
       circleLoader.classList.add('load-complete');
       loaderCheckmark.classList.add('draw');
@@ -144,9 +159,7 @@ socket.on('request_event', (event) => {
         step3.classList.remove('d-none');
         dataStatusElement.textContent = 'Waiting for data...';
       }
-    }
-  } else if (event.status === 'rejected') {
-    if (event.referenceId == referenceId) {
+    } else if (event.status === 'rejected') {
       statusElement.textContent = 'Verification Rejected!';
       circleLoader.classList.add('load-error');
       loaderCheckmark.classList.add('error');
@@ -197,10 +210,16 @@ socket.on('timeout', (data) => {
 
 socket.on('dataFromAS', (data) => {
   if (data.referenceId == referenceId) {
-    dataStatusElement.textContent = 'Data Received!';
-    dataCircleLoader.classList.add('load-complete');
-    dataLoaderCheckmark.classList.add('draw');
-    dataLoaderCheckmark.style = 'display:block;';
+    gotData = true;
+    needData = false;
+
+    if (allDataSigned) {
+      dataStatusElement.textContent = 'Data Received and Signed by AS!';
+      dataCircleLoader.classList.add('load-complete');
+      dataLoaderCheckmark.classList.add('draw');
+      dataLoaderCheckmark.style = 'display:block;';
+    }
+
     dataDisplay.textContent = JSON.stringify(data.dataFromAS);
   }
 });
