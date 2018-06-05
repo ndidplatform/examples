@@ -121,10 +121,7 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
         request.service_list &&
         request.service_list.length > 0
       ) {
-        getAndCallbackDataFromAS({
-          referenceId,
-          requestId: request.request_id,
-        });
+        console.log('All AS signed answered data');
       }
       socket &&
         socket.emit('request_event', {
@@ -134,6 +131,13 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
     }
   } else if (type === 'error') {
     // TODO: callback when using async createRequest and got error
+  } else if (type === 'data_received') {
+    if (other.received_all === true) {
+      getAndCallbackDataFromAS({
+        referenceId,
+        requestId: other.request_id,
+      });
+    }
   }
 });
 
