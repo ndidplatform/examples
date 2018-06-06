@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { spawnSync } from 'child_process';
 import bignum from 'bignum';
 import fs from 'fs';
+import * as config from './config';
 
 function extractParameterFromPrivateKey(privateKey) {
   let fileName = 'tmpNDIDFile' + Date.now();
@@ -72,7 +73,7 @@ export function calculateSecret(namespace, identifier,privateKey) {
 }
 
 export function genNewKeyPair(sid) {
-  let pathSid = './dev_user_key/' + sid;
+  let pathSid = config.keyPath + sid;
   let gen = spawnSync('openssl', ['genrsa', '-out', pathSid, '2048']);
   //console.log(gen.stderr.toString());
   let encode = spawnSync('openssl', ['rsa', '-in', pathSid, '-pubout', '-out', pathSid + '.pub']);

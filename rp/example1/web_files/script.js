@@ -85,6 +85,7 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
     body: JSON.stringify({
       namespace: document.getElementById('namespace').value,
       identifier: document.getElementById('identifier').value,
+      min_idp: document.getElementById('min_idp').value,
       withMockData,
       request_timeout: document.getElementById('timeout').value,
     }),

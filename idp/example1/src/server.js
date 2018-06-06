@@ -11,12 +11,15 @@ import * as API from './api';
 import { eventEmitter as ndidCallbackEvent } from './callbackHandler';
 
 import * as db from './db';
+import * as config from './config';
 import fs from 'fs';
 import * as zkProof from './zkProof';
 import { spawnSync } from 'child_process';
 
 //===== INIT ========
-spawnSync('mkdir',['-p','./dev_user_key/']);
+spawnSync('mkdir',['-p',config.keyPath]);
+//prevent duplicate accessor_id
+const nonce = Date.now()%1000;
 //===================
 
 process.on('unhandledRejection', function(reason, p) {
@@ -62,9 +65,9 @@ app.post('/identity', async (req, res) => {
     //gen new key pair
     zkProof.genNewKeyPair(sid);
 
-    let accessor_public_key = fs.readFileSync('./dev_user_key/' + sid + '.pub','utf8');
-    let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync('./dev_user_key/' + sid,'utf8'));
-    fs.writeFileSync('./dev_user_key/secret_' + sid, secret, 'utf8');
+    let accessor_public_key = fs.readFileSync(config.keyPath + sid + '.pub','utf8');
+    let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync(config.keyPath + sid,'utf8'));
+    fs.writeFileSync(config.keyPath + 'secret_' + sid, secret, 'utf8');
 
     let { request_id, exist } = await API.createNewIdentity({
       namespace,
@@ -72,7 +75,7 @@ app.post('/identity', async (req, res) => {
       //secret: 'MAGIC',
       accessor_type: 'awesome-type',
       accessor_public_key,
-      accessor_id: 'some-awesome-accessor-for-' + sid,
+      accessor_id: 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce,
       ial: 2.3
     });
   
@@ -118,10 +121,10 @@ app.post('/accept', async (req, res) => {
       identifier: user.identifier,
       ial: 3,
       aal: 3,
-      secret: fs.readFileSync('./dev_user_key/secret_' + sid,'utf8'),
+      secret: fs.readFileSync(config.keyPath + '/secret_' + sid,'utf8'),
       status: 'accept',
-      signature: zkProof.signMessage(savedRequest.request_message, './dev_user_key/' + sid),
-      accessor_id: 'some-awesome-accessor-for-' + sid,
+      signature: zkProof.signMessage(savedRequest.request_message, config.keyPath + sid),
+      accessor_id: 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce,
     });
 
     db.removeRequest(requestId);
@@ -152,10 +155,10 @@ app.post('/reject', async (req, res) => {
       identifier: user.identifier,
       ial: 1.2,
       aal: 2.1,
-      secret: fs.readFileSync('./dev_user_key/secret_' + sid,'utf8'),
+      secret: fs.readFileSync(config.keyPath + 'secret_' + sid,'utf8'),
       status: 'reject',
-      signature: zkProof.signMessage(savedRequest.request_message, './dev_user_key/' + sid),
-      accessor_id: 'some-awesome-accessor-for-' + sid,
+      signature: zkProof.signMessage(savedRequest.request_message, config.keyPath + sid),
+      accessor_id: 'some-awesome-accessor-for-' + sid + + '-with-nonce-' + nonce,
     });
 
     db.removeRequest(requestId);
