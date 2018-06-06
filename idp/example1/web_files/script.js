@@ -117,14 +117,14 @@ function createListItem(requestObject) {
       createRequestButton(
         userId,
         requestObject.request_id,
-        'approve'
+        'accept'
       )
     );
     buttonsDiv.appendChild(
       createRequestButton(
         userId,
         requestObject.request_id,
-        'deny'
+        'reject'
       )
     );
   }
@@ -146,13 +146,13 @@ function createRequestButton(userId, requestId, action) {
   buttonElement.classList.add('btn');
   buttonElement.classList.add('btn-block');
   let apiUrlPath;
-  if (action === 'approve') {
+  if (action === 'accept') {
     buttonElement.classList.add('btn-success');
-    buttonElement.textContent = 'Approve';
+    buttonElement.textContent = 'Accept';
     apiUrlPath = '/accept';
-  } else if (action === 'deny') {
+  } else if (action === 'reject') {
     buttonElement.classList.add('btn-danger');
-    buttonElement.textContent = 'Deny';
+    buttonElement.textContent = 'Reject';
     apiUrlPath = '/reject';
   }
   buttonElement.addEventListener('click', (event) => {
