@@ -36,9 +36,9 @@ app.use(bodyParser.json({ limit: '2mb' }));
 
 app.post('/as/service/bank_statement', async (req, res) => {
   //=================== Real business logic here ========================
-  const { request } = req.body;
+  const data = req.body;
 
-  console.log(request);
+  console.log('Callback from NDID API >', data);
 
   //set timeout to simulate request processing
   setTimeout(() => {
