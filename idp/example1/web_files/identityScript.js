@@ -17,12 +17,19 @@ function createNewIdentity() {
       if (!response.ok) {
         throw response;
       }
-      return response.text();
+      return response.json();
     })
-    .then((text) => {
-      if (parseInt(text) !== 0) {
-        alert('Identity created');
-        window.location = '/home/' + namespace + '/' + identifier;
+    .then(({request_id , exist}) => {
+      if (request_id) {
+        if(!exist) {
+          alert('Identity created');
+          window.location = '/home/' + namespace + '/' + identifier;
+        }
+        else {
+          alert('Please consent to request: ' + request_id);
+          document.getElementById('createNewIdentity').innerHTML = 'Wait for consent...';
+          //open eventlistener wait for redirected
+        }
       } else {
         alert('Cannot create identity');
         document.getElementById('createNewIdentity').disabled = false;

@@ -124,7 +124,7 @@ export async function createNewIdentity(data) {
       throw response;
     }
 
-    return;
+    return await response.json();
   } catch (error) {
     throw error;
   }

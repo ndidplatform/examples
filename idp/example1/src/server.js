@@ -66,7 +66,7 @@ app.post('/identity', async (req, res) => {
     let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync('./dev_user_key/' + sid,'utf8'));
     fs.writeFileSync('./dev_user_key/secret_' + sid, secret, 'utf8');
 
-    await API.createNewIdentity({
+    let { request_id, exist } = await API.createNewIdentity({
       namespace,
       identifier,
       //secret: 'MAGIC',
@@ -79,7 +79,10 @@ app.post('/identity', async (req, res) => {
   
     db.addUser(namespace, identifier);
   
-    res.status(200).end();
+    res.status(200).send({
+      request_id,
+      exist
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json(error.error ? error.error.message : error);
