@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/createRequest', async (req, res) => {
-  const { namespace, identifier, withMockData, request_timeout } = req.body;
+  const { namespace, identifier, withMockData, request_timeout, min_idp } = req.body;
 
   const referenceId = Math.floor(Math.random() * 100000 + 1).toString();
 
@@ -59,7 +59,7 @@ app.post('/createRequest', async (req, res) => {
       request_message: 'dummy Request Message',
       min_ial: 1.1,
       min_aal: 1,
-      min_idp: 1,
+      min_idp: min_idp ? parseInt(min_idp) : 1,
       request_timeout: request_timeout ? parseInt(request_timeout) : 86400,
     });
     res.status(200).json({ requestId: request.request_id, referenceId });

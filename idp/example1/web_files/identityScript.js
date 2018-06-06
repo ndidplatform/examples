@@ -1,3 +1,5 @@
+const socket = io('/');
+
 function createNewIdentity() {
   document.getElementById('createNewIdentity').disabled = true;
   document.getElementById('createNewIdentity').innerHTML = 'Creating...';
@@ -17,12 +19,31 @@ function createNewIdentity() {
       if (!response.ok) {
         throw response;
       }
-      return response.text();
+      return response.json();
     })
-    .then((text) => {
-      if (parseInt(text) !== 0) {
-        alert('Identity created');
-        window.location = '/home/' + namespace + '/' + identifier;
+    .then(({request_id , exist}) => {
+      if (request_id) {
+        if(!exist) {
+          alert('Identity created');
+          window.location = '/home/' + namespace + '/' + identifier;
+        }
+        else {
+          //alert('Please consent to request: ' + request_id);
+          document.getElementById('createNewIdentity').innerHTML = 'Waiting for consent at requestID: ' + request_id.toString();
+          //open eventlistener wait for redirected
+          socket.on('onboardResponse', (request) => {
+            if(request.request_id !== request_id) return;
+            if(request.success) {
+              alert('Identity created');
+              window.location = '/home/' + namespace + '/' + identifier;
+            }
+            else {
+              alert('Cannot create identity');
+              document.getElementById('createNewIdentity').disabled = false;
+              document.getElementById('createNewIdentity').innerHTML = 'Create';
+            }
+          });
+        }
       } else {
         alert('Cannot create identity');
         document.getElementById('createNewIdentity').disabled = false;
