@@ -1,3 +1,5 @@
+const socket = io('/');
+
 function createNewIdentity() {
   document.getElementById('createNewIdentity').disabled = true;
   document.getElementById('createNewIdentity').innerHTML = 'Creating...';
@@ -26,9 +28,21 @@ function createNewIdentity() {
           window.location = '/home/' + namespace + '/' + identifier;
         }
         else {
-          alert('Please consent to request: ' + request_id);
-          document.getElementById('createNewIdentity').innerHTML = 'Wait for consent...';
+          //alert('Please consent to request: ' + request_id);
+          document.getElementById('createNewIdentity').innerHTML = 'Waiting for consent at requestID: ' + request_id.toString();
           //open eventlistener wait for redirected
+          socket.on('onboardResponse', (request) => {
+            if(request.request_id !== request_id) return;
+            if(request.success) {
+              alert('Identity created');
+              window.location = '/home/' + namespace + '/' + identifier;
+            }
+            else {
+              alert('Cannot create identity');
+              document.getElementById('createNewIdentity').disabled = false;
+              document.getElementById('createNewIdentity').innerHTML = 'Create';
+            }
+          });
         }
       } else {
         alert('Cannot create identity');

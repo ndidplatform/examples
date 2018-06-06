@@ -15,7 +15,7 @@ function extractParameterFromPrivateKey(privateKey) {
   let privateStr = output.splice(privateIndex+1).join('').split(' ').join('').split(':').join('');
   let modStr = output.splice(2,output.length-4).join('').split(' ').join('').split(':').join('');
 
-  console.log(stringToBigInt(Buffer.from(privateStr,'hex').toString('base64')));
+  //console.log(stringToBigInt(Buffer.from(privateStr,'hex').toString('base64')));
   fs.unlink(fileName, () => {});
   return {
     n: stringToBigInt(Buffer.from(modStr,'hex').toString('base64')),

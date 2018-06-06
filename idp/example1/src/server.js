@@ -73,7 +73,6 @@ app.post('/identity', async (req, res) => {
       accessor_type: 'awesome-type',
       accessor_public_key,
       accessor_id: 'some-awesome-accessor-for-' + sid,
-      accessor_group_id: 'not-so-awesome-group-id-for-' + sid,
       ial: 2.3
     });
   
@@ -187,6 +186,10 @@ ws.on('connection', function(_socket) {
 ndidCallbackEvent.on('callback', (request) => {
   // Save request to local DB
   //db.saveRequest(db.getUserByCid(request.identifier).id, request);
+  if(request.type === 'onboard_request') {
+    socket.emit('onboardResponse', request);
+    return;
+  }
   let user = db.getUserByIdentifier(request.namespace, request.identifier);
   if(!user) return;
   db.saveRequest(
