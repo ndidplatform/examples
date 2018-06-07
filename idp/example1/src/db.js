@@ -1,7 +1,8 @@
 import low from 'lowdb';
 import FileSync from 'lowdb/adapters/FileSync';
+import * as config from './config';
 
-const adapter = new FileSync(process.env.DB_NAME || 'db.json');
+const adapter = new FileSync(config.dbPath);
 const db = low(adapter);
 
 // Set some defaults (required if your JSON file is empty)

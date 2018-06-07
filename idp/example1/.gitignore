@@ -1,6 +1,5 @@
 # Local DB Mockup
-db.json
-dev_user_key_for_*
+./persistent_db*
 
 # production
 /build

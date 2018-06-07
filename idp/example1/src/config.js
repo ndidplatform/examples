@@ -1,7 +1,15 @@
-if(process.env.KEY_PATH) {
-  if(process.env.KEY_PATH[process.env.KEY_PATH.length - 1] !== '/')
-    process.env.KEY_PATH += '/';
+import { spawnSync } from 'child_process';
+
+if(process.env.PERSISTENT_PATH) {
+  if(process.env.PERSISTENT_PATH[process.env.PERSISTENT_PATH.length - 1] !== '/')
+    process.env.PERSISTENT_PATH += '/';
 }
+else process.env.PERSISTENT_PATH = './persistent_db/';
+
+spawnSync('mkdir',['-p',process.env.PERSISTENT_PATH]);
 
 export const dbName = process.env.DB_NAME || 'db.json';
-export const keyPath = process.env.KEY_PATH || './dev_user_key_for_' + dbName.split('.')[0] + '/';
+export const keyPath = 
+  process.env.KEY_PATH 
+  || process.env.PERSISTENT_PATH + 'dev_user_key/';
+export const dbPath = process.env.PERSISTENT_PATH + dbName;
