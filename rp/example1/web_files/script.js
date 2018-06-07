@@ -33,7 +33,10 @@ verifyWithMockDataButton.addEventListener('click', (event) =>
 
 const idpResponseCount = document.getElementById('idp-response-count');
 const asResponse = document.getElementById('as-response');
-const asResponseCount = document.getElementById('as-response-count');
+const asSignedResponseCount = document.getElementById(
+  'as-signed-response-count'
+);
+const asDataResponseCount = document.getElementById('as-data-response-count');
 
 let needData = false;
 let gotData = false;
@@ -124,11 +127,22 @@ socket.on('request_event', (event) => {
     idpResponseCount.textContent = `${event.answered_idp_count}/${
       event.min_idp
     }`;
-    asResponseCount.innerHTML = event.service_list.reduce(
+    asSignedResponseCount.innerHTML = event.service_list.reduce(
       (HtmlString, service) => {
         return (
           HtmlString +
-          `<div>${service.service_id}: ${service.answered_count}/${
+          `<div>${service.service_id}: ${service.signed_data_count}/${
+            service.count
+          }</div>`
+        );
+      },
+      ''
+    );
+    asDataResponseCount.innerHTML = event.service_list.reduce(
+      (HtmlString, service) => {
+        return (
+          HtmlString +
+          `<div>${service.service_id}: ${service.received_data_count}/${
             service.count
           }</div>`
         );
@@ -221,7 +235,7 @@ socket.on('dataFromAS', (data) => {
       dataLoaderCheckmark.style = 'display:block;';
     }
     console.log(data.dataFromAS);
-    for(let i = 0 ; i < data.dataFromAS.length ; i++) {
+    for (let i = 0; i < data.dataFromAS.length; i++) {
       //too long to display
       delete data.dataFromAS[i].source_signature;
     }

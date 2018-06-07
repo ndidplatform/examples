@@ -106,7 +106,7 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
   if (type === 'request_event') {
     const request = other;
 
-    if (request.latest_response_valid === false) {
+    if (request.latest_idp_response_valid === false) {
       socket && socket.emit('invalid', { referenceId });
       return;
     } else if (request.is_closed) {
@@ -121,7 +121,10 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
         request.service_list &&
         request.service_list.length > 0
       ) {
-        console.log('All AS signed answered data');
+        getAndCallbackDataFromAS({
+          referenceId,
+          requestId: other.request_id,
+        });
       }
       socket &&
         socket.emit('request_event', {
@@ -131,13 +134,6 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
     }
   } else if (type === 'error') {
     // TODO: callback when using async createRequest and got error
-  } else if (type === 'data_received') {
-    if (other.received_all === true) {
-      getAndCallbackDataFromAS({
-        referenceId,
-        requestId: other.request_id,
-      });
-    }
   }
 });
 
