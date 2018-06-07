@@ -1,5 +1,5 @@
 # Local DB Mockup
-./persistent_db*
+/persistent_db
 
 # production
 /build
