@@ -68,6 +68,7 @@ app.post('/identity', async (req, res) => {
     let accessor_public_key = fs.readFileSync(config.keyPath + sid + '.pub','utf8');
     let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync(config.keyPath + sid,'utf8'));
     fs.writeFileSync(config.keyPath + 'secret_' + sid, secret, 'utf8');
+    fs.writeFileSync(config.keyPath + 'nonce_' + sid, nonce, 'utf8');
 
     let { request_id, exist } = await API.createNewIdentity({
       namespace,
@@ -103,12 +104,13 @@ app.get('/requests/:namespace/:identifier', async function(req, res) {
   res.status(200).send(requests);
 });
 
-app.post('/accept', async (req, res) => {
+async function createResponse(req, res, status) {
   const { userId, requestId } = req.body;
 
   const user = db.getUser(userId);
   const savedRequest = db.getRequest(userId, requestId);
   const sid = user.namespace + ':' + user.identifier;
+  let nonce = fs.readFileSync(config.keyPath + 'nonce_' + sid, 'utf8');
   if (!savedRequest) {
     res.status(500).json('Unknown request ID');
     return;
@@ -121,8 +123,8 @@ app.post('/accept', async (req, res) => {
       identifier: user.identifier,
       ial: 3,
       aal: 3,
-      secret: fs.readFileSync(config.keyPath + '/secret_' + sid,'utf8'),
-      status: 'accept',
+      secret: fs.readFileSync(config.keyPath + 'secret_' + sid,'utf8'),
+      status,
       signature: zkProof.signMessage(savedRequest.request_message, config.keyPath + sid),
       accessor_id: 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce,
     });
@@ -135,40 +137,14 @@ app.post('/accept', async (req, res) => {
     db.removeRequest(requestId);
     res.status(500).json(error.error ? error.error.message : error);
   }
+}
+
+app.post('/accept', async (req, res) => {
+  createResponse(req, res, 'accept');
 });
 
 app.post('/reject', async (req, res) => {
-  const { userId, requestId } = req.body;
-
-  const user = db.getUser(userId);
-  const savedRequest = db.getRequest(userId, requestId);
-  const sid = user.namespace + ':' + user.identifier;
-  if (!savedRequest) {
-    res.status(500).json('Unknown request ID');
-    return;
-  }
-
-  try {
-    await API.createIdpResponse({
-      request_id: requestId,
-      namespace: user.namespace,
-      identifier: user.identifier,
-      ial: 1.2,
-      aal: 2.1,
-      secret: fs.readFileSync(config.keyPath + 'secret_' + sid,'utf8'),
-      status: 'reject',
-      signature: zkProof.signMessage(savedRequest.request_message, config.keyPath + sid),
-      accessor_id: 'some-awesome-accessor-for-' + sid + + '-with-nonce-' + nonce,
-    });
-
-    db.removeRequest(requestId);
-
-    res.status(200).end();
-  } catch (error) {
-    //TODO handle when error with other reason than closed or timed out
-    db.removeRequest(requestId);
-    res.status(500).json(error.error ? error.error.message : error);
-  }
+  createResponse(req, res, 'reject');
 });
 
 app.get('/getUserId/:namespace/:identifier', (req, res) => {
