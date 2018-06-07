@@ -3,6 +3,7 @@ import { spawnSync } from 'child_process';
 import bignum from 'bignum';
 import fs from 'fs';
 import * as config from './config';
+import * as constants from 'constants';
 
 function extractParameterFromPrivateKey(privateKey) {
   let fileName = 'tmpNDIDFile' + Date.now();
@@ -93,6 +94,9 @@ export function signMessage(messageToSign, privateKeyPath) {
 
 export function accessorSign(sid, text) {
   let privateKey = fs.readFileSync(config.keyPath + sid, 'utf8');
-  const encrypted = crypto.privateEncrypt(privateKey, Buffer.from(text,'base64'));
+  const encrypted = crypto.privateEncrypt({
+    key: privateKey,
+    padding: constants.RSA_NO_PADDING,
+  }, Buffer.from(text,'base64'));
   return encrypted.toString('base64');
 }
