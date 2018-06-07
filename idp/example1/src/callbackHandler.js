@@ -4,6 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 import * as API from './api';
+import * as zkProof from './zkProof';
 
 const NDID_API_CALLBACK_IP = process.env.NDID_API_CALLBACK_IP || 'localhost';
 const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5002;
@@ -12,6 +13,7 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5002;
   for (;;) {
     try {
       await API.setCallbackUrl({ url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/request` });
+      await API.registerAccessorCallback(`http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/accessor`);
       break;
     } catch (error) {
       console.error('Error setting callback URL at NDID API');
@@ -22,6 +24,7 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5002;
 })();
 
 export const eventEmitter = new EventEmitter();
+export let accessorSign = {};
 
 const app = express();
 
@@ -34,6 +37,14 @@ app.post('/idp/request', async (req, res) => {
   eventEmitter.emit('callback', request);
 
   res.status(200).end();
+});
+
+app.post('/idp/accessor/:accessor_id', async (req, res) => {
+  let { accessor_id } = req.params;
+  let { hash_of_sid } = req.body;
+  let sid = accessorSign[accessor_id];
+  //console.log(sid,hash_of_sid);
+  res.status(200).send(zkProof.accessorSign(sid, hash_of_sid));
 });
 
 app.listen(NDID_API_CALLBACK_PORT, () =>

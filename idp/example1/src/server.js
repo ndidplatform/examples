@@ -9,6 +9,7 @@ import morgan from 'morgan';
 
 import * as API from './api';
 import { eventEmitter as ndidCallbackEvent } from './callbackHandler';
+import { accessorSign } from './callbackHandler';
 
 import * as db from './db';
 import * as config from './config';
@@ -66,20 +67,25 @@ app.post('/identity', async (req, res) => {
     zkProof.genNewKeyPair(sid);
 
     let accessor_public_key = fs.readFileSync(config.keyPath + sid + '.pub','utf8');
-    let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync(config.keyPath + sid,'utf8'));
-    fs.writeFileSync(config.keyPath + 'secret_' + sid, secret, 'utf8');
-    fs.writeFileSync(config.keyPath + 'nonce_' + sid, nonce, 'utf8');
+    //let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync(config.keyPath + sid,'utf8'));
+    let reference_id = (Date.now()%100000).toString();
+ 
+    //TODO mapping reference_id to callback accessor to sign
+    let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
+    accessorSign[accessor_id] = sid;
 
-    let { request_id, exist } = await API.createNewIdentity({
+    let { request_id, exist, secret } = await API.createNewIdentity({
       namespace,
       identifier,
-      reference_id: (Date.now()%100000).toString(),
+      reference_id,
       accessor_type: 'awesome-type',
       accessor_public_key,
-      accessor_id: 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce,
+      accessor_id,
       ial: 2.3
     });
   
+    fs.writeFileSync(config.keyPath + 'secret_' + sid, secret, 'utf8');
+    fs.writeFileSync(config.keyPath + 'nonce_' + sid, nonce, 'utf8');
     db.addUser(namespace, identifier);
   
     res.status(200).send({
@@ -98,7 +104,12 @@ app.get('/home/:namespace/:identifier', (req, res) => {
 
 app.get('/requests/:namespace/:identifier', async function(req, res) {
   const { namespace, identifier } = req.params;
-  const userId = db.getUserByIdentifier(namespace, identifier).id;
+  const user = db.getUserByIdentifier(namespace, identifier);
+  if(!user) {
+    res.status(500).end();
+    return;
+  }
+  const userId = user.id;
   const requests = db.getRequests(userId);
 
   res.status(200).send(requests);
@@ -123,7 +134,7 @@ async function createResponse(req, res, status) {
       identifier: user.identifier,
       ial: 3,
       aal: 3,
-      secret: fs.readFileSync(config.keyPath + 'secret_' + sid,'utf8'),
+      secret: fs.readFileSync(config.keyPath + 'secret_' + sid, 'utf8'),
       status,
       signature: zkProof.signMessage(savedRequest.request_message, config.keyPath + sid),
       accessor_id: 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce,

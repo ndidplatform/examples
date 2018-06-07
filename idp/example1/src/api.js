@@ -3,6 +3,36 @@ import fetch from 'node-fetch';
 const apiServerAddress =
   process.env.API_SERVER_ADDRESS || 'http://localhost:8081';
 
+export async function registerAccessorCallback(url) {
+  try {
+    const response = await fetch(`${apiServerAddress}/idp/accessor/callback`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
+      throw response;
+    }
+
+    // let responseJson = await response.json();
+
+    // return responseJson;
+    return;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const getCallbackUrl = async () => {
   try {
     const response = await fetch(`${apiServerAddress}/idp/callback`, {
@@ -124,7 +154,8 @@ export async function createNewIdentity(data) {
       throw response;
     }
 
-    return await response.json();
+    let tmp = await response.json();
+    return tmp;
   } catch (error) {
     throw error;
   }

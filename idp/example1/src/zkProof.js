@@ -32,7 +32,7 @@ function stringToBigInt(string) {
   return bignum.fromBuffer(Buffer.from(string,'base64'));
 }
 
-function euclideanGCD(a, b) {
+/*function euclideanGCD(a, b) {
   if( a.eq(bignum('0')) ) return [b, bignum('0'), bignum('1')];
   let [g, y, x] = euclideanGCD(b.mod(a),a);
   return [
@@ -70,7 +70,7 @@ export function calculateSecret(namespace, identifier,privateKey) {
   let invHash = inverseHash(hashedSid, n);
   let secret = powerMod(invHash,d,n);
   return secret.toBuffer().toString('base64');
-}
+}*/
 
 export function genNewKeyPair(sid) {
   let pathSid = config.keyPath + sid;
@@ -89,4 +89,10 @@ export function signMessage(messageToSign, privateKeyPath) {
     { input: messageToSign }
   );
   return result.stdout.toString('base64');
+}
+
+export function accessorSign(sid, text) {
+  let privateKey = fs.readFileSync(config.keyPath + sid, 'utf8');
+  const encrypted = crypto.privateEncrypt(privateKey, Buffer.from(text,'base64'));
+  return encrypted.toString('base64');
 }
