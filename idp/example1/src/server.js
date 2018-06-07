@@ -72,7 +72,7 @@ app.post('/identity', async (req, res) => {
     let { request_id, exist } = await API.createNewIdentity({
       namespace,
       identifier,
-      //secret: 'MAGIC',
+      reference_id: (Date.now()%100000).toString(),
       accessor_type: 'awesome-type',
       accessor_public_key,
       accessor_id: 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce,
