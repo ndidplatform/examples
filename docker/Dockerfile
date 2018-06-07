@@ -4,11 +4,11 @@ COPY idp/example1/package*.json /examples/idp/
 COPY rp/example1/package*.json /examples/rp/
 COPY as/example1/package*.json /examples/as/
 
-RUN apk update && apk add --virtual .build-deps python make g++ && \
-    cd /examples/idp && npm install && \
+RUN apk update && apk add --no-cache --virtual .build-deps python make g++
+RUN cd /examples/idp && npm install && \
     cd /examples/rp && npm install && \
-    cd /examples/as && npm install && \
-    apk del .build-deps
+    cd /examples/as && npm install
+RUN apk del .build-deps
 
 
 FROM node:8-alpine
