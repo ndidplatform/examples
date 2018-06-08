@@ -38,6 +38,7 @@ const asSignedResponseCount = document.getElementById(
 );
 const asDataResponseCount = document.getElementById('as-data-response-count');
 
+let flowFinished = false;
 let needData = false;
 let gotData = false;
 let allDataSigned = false;
@@ -63,6 +64,8 @@ let allDataSigned = false;
 });*/
 
 function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
+  flowFinished = false;
+
   // const selectedIdpElements = Array.prototype.slice.call(document.querySelectorAll('#idps input'));
   // const selectedIdps = selectedIdpElements.filter(ele => ele.checked === true).map(ele => ele.dataset.id);
 
@@ -75,8 +78,8 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
   if (!needData) {
     asResponse.classList.add('d-none');
   }
-  if(withMockData) verifyWithMockDataButton.textContent = 'Requesting...';
-  else  verifyButton.textContent = 'Requesting...';
+  if (withMockData) verifyWithMockDataButton.textContent = 'Requesting...';
+  else verifyButton.textContent = 'Requesting...';
   verifyButton.disabled = true;
   verifyWithMockDataButton.disabled = true;
 
@@ -115,7 +118,8 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
     })
     .then(() => {
       verifyButton.textContent = 'Request Identity Verification';
-      verifyWithMockDataButton.textContent = 'Request Identity Verification with Data request';
+      verifyWithMockDataButton.textContent =
+        'Request Identity Verification with Data request';
       verifyButton.disabled = false;
       verifyWithMockDataButton.disabled = false;
     });
@@ -126,6 +130,14 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
 
 socket.on('request_event', (event) => {
   if (event.referenceId == referenceId) {
+    if (
+      event.status === 'completed' ||
+      (event.status === 'rejected' &&
+        event.answered_idp_count === event.min_idp)
+    ) {
+      flowFinished = true;
+    }
+
     idpResponseCount.textContent = `${event.answered_idp_count}/${
       event.min_idp
     }`;
@@ -195,6 +207,7 @@ socket.on('invalid', (data) => {
 });
 
 function requestClosed(timeout) {
+  if (flowFinished) return;
   if (!verified) {
     statusElement.textContent = timeout
       ? 'Verification Timeout!'

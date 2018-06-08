@@ -101,7 +101,8 @@ ws.on('connection', function(_socket) {
 });
 
 ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
-  const { type, ...other } = callbackData;console.log('>>>', callbackData)
+  console.log('Received callback from NDID API:', callbackData);
+  const { type, ...other } = callbackData;
 
   if (type === 'request_event') {
     const request = other;
