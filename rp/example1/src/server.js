@@ -101,7 +101,7 @@ ws.on('connection', function(_socket) {
 });
 
 ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
-  const { type, ...other } = callbackData;
+  const { type, ...other } = callbackData;console.log('>>>', callbackData)
 
   if (type === 'request_event') {
     const request = other;
@@ -116,28 +116,37 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
       socket && socket.emit('timeout', { referenceId });
       return;
     } else {
-      if (
-        request.status === 'completed' &&
-        request.service_list &&
-        request.service_list.length > 0
-      ) {
-        getAndCallbackDataFromAS({
-          referenceId,
-          requestId: other.request_id,
-        });
-      }
       socket &&
         socket.emit('request_event', {
           referenceId,
           ...request,
         });
+      if (request.status === 'completed') {
+        if (
+          request.service_list &&
+          request.service_list.length > 0
+        ) {
+          getCallbackDataFromASAndClose({
+            referenceId,
+            requestId: request.request_id,
+          });
+        } else {
+          closeRequest(request.request_id);
+        }
+      }
+      if (
+        request.status === 'rejected' &&
+        request.answered_idp_count === request.min_idp
+      ) {
+        closeRequest(request.request_id);
+      }
     }
   } else if (type === 'error') {
     // TODO: callback when using async createRequest and got error
   }
 });
 
-async function getAndCallbackDataFromAS({ referenceId, requestId }) {
+async function getCallbackDataFromASAndClose({ referenceId, requestId }) {
   const dataFromAS = await API.getDataFromAS({ requestId });
   if (socket) {
     socket.emit('dataFromAS', {
@@ -145,6 +154,11 @@ async function getAndCallbackDataFromAS({ referenceId, requestId }) {
       dataFromAS,
     });
   }
+  await closeRequest(requestId);
+}
+
+function closeRequest(requestId) {
+  return API.closeRequest({ requestId });
 }
 
 server.listen(WEB_SERVER_PORT);

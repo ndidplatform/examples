@@ -110,3 +110,32 @@ export const getDataFromAS = async ({ requestId }) => {
     throw error;
   }
 };
+
+export const closeRequest = async ({ requestId }) => {
+  try {
+    const response = await fetch(`${apiServerAddress}/rp/requests/close`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        request_id: requestId,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
+      throw response;
+    }
+
+    // let responseJson = await response.json();
+
+    // return responseJson;
+  } catch (error) {
+    throw error;
+  }
+};
