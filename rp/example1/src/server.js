@@ -109,10 +109,10 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
     if (request.latest_idp_response_valid === false) {
       socket && socket.emit('invalid', { referenceId });
       return;
-    } else if (request.is_closed) {
+    } else if (request.closed) {
       socket && socket.emit('closed', { referenceId });
       return;
-    } else if (request.is_timed_out) {
+    } else if (request.timed_out) {
       socket && socket.emit('timeout', { referenceId });
       return;
     } else {
