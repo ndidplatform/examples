@@ -1,11 +1,11 @@
 import crypto from 'crypto';
 import { spawnSync } from 'child_process';
-import bignum from 'bignum';
+//import bignum from 'bignum';
 import fs from 'fs';
 import * as config from './config';
-import * as constants from 'constants';
+//import * as constants from 'constants';
 
-function extractParameterFromPrivateKey(privateKey) {
+/*function extractParameterFromPrivateKey(privateKey) {
   let fileName = 'tmpNDIDFile' + Date.now();
   fs.writeFileSync(fileName,privateKey);
   let output = spawnSync('openssl',('rsa -in ' + fileName + ' -text -noout').split(' '));
@@ -33,7 +33,7 @@ function stringToBigInt(string) {
   return bignum.fromBuffer(Buffer.from(string,'base64'));
 }
 
-/*function euclideanGCD(a, b) {
+function euclideanGCD(a, b) {
   if( a.eq(bignum('0')) ) return [b, bignum('0'), bignum('1')];
   let [g, y, x] = euclideanGCD(b.mod(a),a);
   return [
@@ -96,7 +96,7 @@ export function accessorSign(sid, text) {
   let privateKey = fs.readFileSync(config.keyPath + sid, 'utf8');
   const encrypted = crypto.privateEncrypt({
     key: privateKey,
-    padding: constants.RSA_NO_PADDING,
+    //padding: constants.RSA_PKCS1_PADDING,
   }, Buffer.from(text,'base64'));
   return encrypted.toString('base64');
 }
