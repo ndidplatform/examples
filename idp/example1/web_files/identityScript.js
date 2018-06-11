@@ -37,7 +37,7 @@ function createNewIdentity() {
               alert('Identity created');
               window.location = '/home/' + namespace + '/' + identifier;
             } else {
-              alert('Cannot create identity: User rejected');
+              alert('Cannot create identity: ' + request.reason);
               document.getElementById('createNewIdentity').disabled = false;
               document.getElementById('createNewIdentity').innerHTML = 'Create';
             }
