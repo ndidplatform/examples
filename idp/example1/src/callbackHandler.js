@@ -39,12 +39,13 @@ app.post('/idp/request', async (req, res) => {
   res.status(200).end();
 });
 
-app.post('/idp/accessor/:accessor_id', async (req, res) => {
-  let { accessor_id } = req.params;
-  let { hash_of_sid } = req.body;
+app.post('/idp/accessor', async (req, res) => {
+  let { hash_of_sid, accessor_id } = req.body;
   let sid = accessorSign[accessor_id];
   //console.log(sid,hash_of_sid);
-  res.status(200).send(zkProof.accessorSign(sid, hash_of_sid));
+  res.status(200).send({
+    signature: zkProof.accessorSign(sid, hash_of_sid)
+  });
 });
 
 app.listen(NDID_API_CALLBACK_PORT, () =>
