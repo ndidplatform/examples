@@ -41,11 +41,11 @@ app.post('/idp/request', async (req, res) => {
 });
 
 app.post('/idp/accessor', async (req, res) => {
-  let { hash_of_sid, accessor_id } = req.body;
+  let { sid_hash, accessor_id } = req.body;
   let sid = accessorSign[accessor_id];
   //console.log(sid,hash_of_sid);
   res.status(200).send({
-    signature: zkProof.accessorSign(sid, hash_of_sid)
+    signature: zkProof.accessorSign(sid, sid_hash)
   });
 });
 
