@@ -1,3 +1,5 @@
+import 'source-map-support/register';
+
 import path from 'path';
 import http from 'http';
 
