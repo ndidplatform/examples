@@ -15,7 +15,8 @@ app.post('/rp/request/:referenceId', async (req, res) => {
   const callbackData = req.body;
   const { referenceId } = req.params; 
 
-  //console.log(request);
+  console.log('Received callback from NDID API:', callbackData);
+  
   eventEmitter.emit('callback', referenceId, callbackData);
 
   res.status(200).end();

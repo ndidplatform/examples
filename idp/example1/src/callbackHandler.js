@@ -31,10 +31,11 @@ const app = express();
 app.use(bodyParser.json({ limit: '2mb' }));
 
 app.post('/idp/request', async (req, res) => {
-  const { request } = req.body;
+  const callbackData = req.body;
 
-  //console.log(request);
-  eventEmitter.emit('callback', request);
+  console.log('Received callback from NDID API:', callbackData);
+
+  eventEmitter.emit('callback', callbackData);
 
   res.status(200).end();
 });
