@@ -21,38 +21,36 @@ function createNewIdentity() {
       }
       return response.json();
     })
-    .then(({request_id , exist}) => {
+    .then(({ request_id, exist }) => {
       if (request_id) {
-        if(!exist) {
+        if (!exist) {
           alert('Identity created');
           window.location = '/home/' + namespace + '/' + identifier;
-        }
-        else {
+        } else {
           //alert('Please consent to request: ' + request_id);
-          document.getElementById('createNewIdentity').innerHTML = 'Waiting for consent at requestID: ' + request_id.toString();
+          document.getElementById('createNewIdentity').innerHTML =
+            'Waiting for consent at requestID: ' + request_id.toString();
           //open eventlistener wait for redirected
           socket.on('onboardResponse', (request) => {
-            if(request.request_id !== request_id) return;
-            if(request.success) {
+            if (request.request_id !== request_id) return;
+            if (request.success) {
               alert('Identity created');
               window.location = '/home/' + namespace + '/' + identifier;
-            }
-            else {
-              alert('Cannot create identity');
+            } else {
+              alert('Cannot create identity: User rejected');
               document.getElementById('createNewIdentity').disabled = false;
               document.getElementById('createNewIdentity').innerHTML = 'Create';
             }
           });
         }
       } else {
-        alert('Cannot create identity');
+        alert('Cannot create identity: Request ID is missing');
         document.getElementById('createNewIdentity').disabled = false;
         document.getElementById('createNewIdentity').innerHTML = 'Create';
       }
     })
     .catch((error) => {
-      console.error(error);
-      alert('Cannot create identity');
+      error.json().then((errorMessage) => window.alert(errorMessage));
       document.getElementById('createNewIdentity').disabled = false;
       document.getElementById('createNewIdentity').innerHTML = 'Create';
     });

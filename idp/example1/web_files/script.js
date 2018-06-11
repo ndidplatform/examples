@@ -167,16 +167,17 @@ function createRequestButton(userId, requestId, action) {
       }),
     })
     .then((response) => {
-      //return response;
-      //return response.json();
-      //window.location.reload();
-      //TODO handle when response failed (time out or close)
       fetchAndUpdateRequestList();
-      if(response.status !== 200) alert('This request is manually closed or timed out.');
+      if (response.status !== 200) {
+        throw response;
+      }
       return response.json();
     })
-    .then((json) => {
-      //console.log(json);
+    // .then((json) => {
+    //   //console.log(json);
+    // })
+    .catch((error) => {
+      error.json().then((errorMessage) => window.alert(errorMessage));
     });
   });
   return buttonElement;

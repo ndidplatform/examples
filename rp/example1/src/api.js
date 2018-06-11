@@ -40,7 +40,11 @@ export const createRequest = async ({
     );
 
     if (!response.ok) {
-      if (response.status === 400 || response.status === 500) {
+      if (
+        response.status === 400 ||
+        response.status === 500 ||
+        response.status === 403
+      ) {
         const errorJson = await response.json();
         throw errorJson;
       }
@@ -68,7 +72,11 @@ export const getRequest = async ({ requestId }) => {
     );
 
     if (!response.ok) {
-      if (response.status === 400 || response.status === 500) {
+      if (
+        response.status === 400 ||
+        response.status === 500 ||
+        response.status === 403
+      ) {
         const errorJson = await response.json();
         throw errorJson;
       }
@@ -96,7 +104,11 @@ export const getDataFromAS = async ({ requestId }) => {
     );
 
     if (!response.ok) {
-      if (response.status === 400 || response.status === 500) {
+      if (
+        response.status === 400 ||
+        response.status === 500 ||
+        response.status === 403
+      ) {
         const errorJson = await response.json();
         throw errorJson;
       }
@@ -125,7 +137,11 @@ export const closeRequest = async ({ requestId }) => {
     });
 
     if (!response.ok) {
-      if (response.status === 400 || response.status === 500) {
+      if (
+        response.status === 400 ||
+        response.status === 500 ||
+        response.status === 403
+      ) {
         const errorJson = await response.json();
         throw errorJson;
       }
