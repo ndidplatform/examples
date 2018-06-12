@@ -13,3 +13,6 @@ export const keyPath =
   process.env.KEY_PATH 
   || process.env.PERSISTENT_PATH + 'dev_user_key/';
 export const dbPath = process.env.PERSISTENT_PATH + dbName;
+
+export const useExternalCryptoService =
+  process.env.USE_EXTERNAL_CRYPTO_SERVICE === 'true' ? true : false;

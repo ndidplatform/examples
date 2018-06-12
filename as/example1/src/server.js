@@ -5,6 +5,8 @@ import bodyParser from 'body-parser';
 
 import * as API from './api';
 
+import './externalCryptoCallback';
+
 const NDID_API_CALLBACK_IP = process.env.NDID_API_CALLBACK_IP || 'localhost';
 const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
 

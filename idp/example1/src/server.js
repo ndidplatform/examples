@@ -19,6 +19,8 @@ import fs from 'fs';
 import * as zkProof from './zkProof';
 import { spawnSync } from 'child_process';
 
+import './externalCryptoCallback';
+
 //===== INIT ========
 spawnSync('mkdir',['-p',config.keyPath]);
 //prevent duplicate accessor_id

@@ -60,3 +60,64 @@ export const setCallbackUrl = async ({
     throw error;
   }
 };
+
+export const setDpkiCallbackUrl = async ({ sign_url, decrypt_url }) => {
+  try {
+    const response = await fetch(`${apiServerAddress}/dpki/node/register_callback`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sign_url,
+        decrypt_url,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
+      throw response;
+    }
+
+    // let responseJson = await response.json();
+
+    // return responseJson;
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const setDpkiCallbackUrlMaster = async ({ url }) => {
+  try {
+    const response = await fetch(`${apiServerAddress}/dpki/node/register_callback_master`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
+      throw response;
+    }
+
+    // let responseJson = await response.json();
+
+    // return responseJson;
+    return;
+  } catch (error) {
+    throw error;
+  }
+};

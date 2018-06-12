@@ -12,6 +12,8 @@ import io from 'socket.io';
 import * as API from './api';
 import { eventEmitter as ndidCallbackEvent } from './callbackHandler';
 
+import './externalCryptoCallback';
+
 process.on('unhandledRejection', function(reason, p) {
   console.error('Unhandled Rejection:', p, '\nreason:', reason.stack || reason);
 });
