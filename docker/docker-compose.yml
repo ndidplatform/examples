@@ -1,15 +1,27 @@
 version: "3"
 services: 
-  examples-idp:
+  examples-idp-1:
     image: ndidplatform/examples:latest
     environment:
         - SERVER_PORT=${EXAMPLE_PORT:-8000}
-        - API_SERVER_ADDRESS=http://api-idp:${API_PORT:-8080}
-        - NDID_API_CALLBACK_IP=examples-idp
+        - API_SERVER_ADDRESS=http://api-idp-1:${API_PORT:-8080}
+        - NDID_API_CALLBACK_IP=examples-idp-1
         - NDID_API_CALLBACK_PORT=${EXAMPLE_CALLBACK_PORT:-5000}
     command: idp
     ports:
       - "8000:${EXAMPLE_PORT:-8000}"
+    networks:
+      - ndidplatform
+  examples-idp-2:
+    image: ndidplatform/examples:latest
+    environment:
+        - SERVER_PORT=${EXAMPLE_PORT:-8000}
+        - API_SERVER_ADDRESS=http://api-idp-2:${API_PORT:-8080}
+        - NDID_API_CALLBACK_IP=examples-idp-2
+        - NDID_API_CALLBACK_PORT=${EXAMPLE_CALLBACK_PORT:-5000}
+    command: idp
+    ports:
+      - "8001:${EXAMPLE_PORT:-8000}"
     networks:
       - ndidplatform
   examples-rp:
@@ -21,7 +33,7 @@ services:
         - NDID_API_CALLBACK_PORT=${EXAMPLE_CALLBACK_PORT:-5000}
     command: rp
     ports:
-      - "8001:${EXAMPLE_PORT:-8000}"
+      - "9000:${EXAMPLE_PORT:-8000}"
     networks:
       - ndidplatform
   examples-as:
@@ -33,7 +45,7 @@ services:
         - NDID_API_CALLBACK_PORT=${EXAMPLE_CALLBACK_PORT:-5000}
     command: as
     ports:
-      - "8002:${EXAMPLE_PORT:-8000}"
+      - "10000:${EXAMPLE_PORT:-8000}"
     networks:
       - ndidplatform
 networks:
