@@ -16,7 +16,7 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5002;
       await API.registerAccessorCallback(`http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/accessor`);
       break;
     } catch (error) {
-      console.error('Error setting callback URL at NDID API');
+      console.error('Error setting callback URL at NDID API', error);
     }
     // simple wait
     await new Promise((resolve, reject) => setTimeout(resolve, 5000)); // wait for 5 seconds

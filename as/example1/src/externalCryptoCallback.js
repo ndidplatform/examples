@@ -20,7 +20,7 @@ if (config.useExternalCryptoService) {
         });
         break;
       } catch (error) {
-        console.error('Error setting DPKI callback URL at NDID API');
+        console.error('Error setting DPKI callback URL at NDID API', error);
       }
       // simple wait
       await new Promise((resolve, reject) => setTimeout(resolve, 5000)); // wait for 5 seconds

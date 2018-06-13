@@ -23,7 +23,7 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
       break;
     } catch (error) {
       if (error.error && error.error.code === 25005) break;
-      console.error('Error setting callback URL at NDID API');
+      console.error('Error setting callback URL at NDID API', error);
     }
     // simple wait
     await new Promise((resolve, reject) => setTimeout(resolve, 5000)); // wait for 5 seconds
