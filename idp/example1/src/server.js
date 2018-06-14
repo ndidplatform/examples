@@ -62,6 +62,8 @@ app.get('/identity', (req, res) => {
   res.sendFile(path.join(__dirname, '../web_files/identity.html'));
 });
 
+let onboardMapping = {};
+
 app.post('/identity', async (req, res) => {
   const { namespace, identifier } = req.body;
   try {
@@ -78,7 +80,7 @@ app.post('/identity', async (req, res) => {
     let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
     accessorSign[accessor_id] = sid;
 
-    let { request_id, exist, secret } = await API.createNewIdentity({
+    let { request_id, exist, /*secret*/ } = await API.createNewIdentity({
       namespace,
       identifier,
       reference_id,
@@ -88,7 +90,8 @@ app.post('/identity', async (req, res) => {
       ial: 2.3
     });
   
-    fs.writeFileSync(config.keyPath + 'secret_' + sid, secret, 'utf8');
+    //fs.writeFileSync(config.keyPath + 'secret_' + sid, secret, 'utf8');
+    onboardMapping[request_id] = sid;
     fs.writeFileSync(config.keyPath + 'nonce_' + sid, nonce, 'utf8');
     db.addUser(namespace, identifier);
   
@@ -182,6 +185,7 @@ ndidCallbackEvent.on('callback', (request) => {
   //db.saveRequest(db.getUserByCid(request.identifier).id, request);
   if(request.type === 'onboard_request') {
     socket.emit('onboardResponse', request);
+    fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
     return;
   }
   let user = db.getUserByIdentifier(request.namespace, request.identifier);
