@@ -107,7 +107,7 @@ ws.on('connection', function(_socket) {
 ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
   const { type, ...other } = callbackData;
 
-  if (type === 'request_event') {
+  if (type === 'request_status') {
     const request = other;
 
     if (request.latest_idp_response_valid === false) {
@@ -121,7 +121,7 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
       return;
     } else {
       socket &&
-        socket.emit('request_event', {
+        socket.emit('request_status', {
           referenceId,
           ...request,
         });
