@@ -96,11 +96,12 @@ function createListItem(requestObject) {
       let dataObject = requestObject.data_request_list[i];
       let dataLi = document.createElement('li');
       dataLi.classList.add('data-list-item');
-      let asList = dataObject.as_id_list[0];
-      for(let i = 1 ; i < dataObject.as_id_list.length ; i++) {
-        asList += ', ' + dataObject.as_id_list[i]
+      if (dataObject.as_id_list) {
+        let asList = dataObject.as_id_list.join(', ');
+        dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.count} of ${asList}`;
+      } else {
+        dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.count} AS`;
       }
-      dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.count} of ${asList}`;
       dataDiv.appendChild(dataLi);
     }
     infoDiv.appendChild(dataDiv);

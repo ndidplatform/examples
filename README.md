@@ -15,7 +15,8 @@ docker-compose -f docker/docker-compose.yml up
 ./docker/build.sh
 ```
 
-Then you can access idp-example at http://localhost:8000/ and rp-example at http://localhost:8001/
+Then you can access idp-1-example at http://localhost:8000/, idp-2-example at http://localhost:8001/ 
+and rp-example at http://localhost:9000/
 
 ### Note
 

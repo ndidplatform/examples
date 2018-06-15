@@ -128,7 +128,7 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
   }*/
 }
 
-socket.on('request_event', (event) => {
+socket.on('request_status', (event) => {
   if (event.referenceId == referenceId) {
     if (
       event.status === 'completed' ||

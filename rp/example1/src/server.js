@@ -107,7 +107,7 @@ ws.on('connection', function(_socket) {
 ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
   const { type, ...other } = callbackData;
 
-  if (type === 'request_event') {
+  if (type === 'request_status') {
     const request = other;
 
     if (request.latest_idp_response_valid === false) {
@@ -121,7 +121,7 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
       return;
     } else {
       socket &&
-        socket.emit('request_event', {
+        socket.emit('request_status', {
           referenceId,
           ...request,
         });
@@ -130,12 +130,10 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
           request.service_list &&
           request.service_list.length > 0
         ) {
-          getCallbackDataFromASAndClose({
+          getCallbackDataFromAS({
             referenceId,
             requestId: request.request_id,
           });
-        } else {
-          closeRequest(request.request_id);
         }
       }
       if (
@@ -150,7 +148,7 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
   }
 });
 
-async function getCallbackDataFromASAndClose({ referenceId, requestId }) {
+async function getCallbackDataFromAS({ referenceId, requestId }) {
   const dataFromAS = await API.getDataFromAS({ requestId });
   if (socket) {
     socket.emit('dataFromAS', {
@@ -158,7 +156,6 @@ async function getCallbackDataFromASAndClose({ referenceId, requestId }) {
       dataFromAS,
     });
   }
-  await closeRequest(requestId);
 }
 
 function closeRequest(requestId) {
