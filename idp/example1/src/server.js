@@ -180,7 +180,7 @@ ws.on('connection', function(_socket) {
 ndidCallbackEvent.on('callback', (request) => {
   // Save request to local DB
   //db.saveRequest(db.getUserByCid(request.identifier).id, request);
-  if(request.type === 'onboard_request') {
+  if(request.type === 'onboard_consent_request') {
     socket.emit('onboardResponse', request);
     return;
   }
