@@ -10,7 +10,8 @@ db
   .defaults({
     users: [],
     requests: [],
-    userCount: 0
+    userCount: 0,
+    accessor: [],
   })
   .write();
 
@@ -27,6 +28,24 @@ export const getUser = (userId) => {
     .find({ citizenId: cid.toString() })
     .value();
 };*/
+
+export const getAccessorIdBySid = (sid) => {
+  return db
+    .get('accessor')
+    .find({
+      sid,
+    })
+    .value();
+};
+
+export const setAccessorIdBySid = (sid, accessor_id) => {
+  db.get('accessor')
+  .push({
+    sid,
+    accessor_id,
+  })
+  .write();
+};
 
 export const getUserByIdentifier = (namespace, identifier) => {
   return db

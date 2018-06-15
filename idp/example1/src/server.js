@@ -77,18 +77,20 @@ app.post('/identity', async (req, res) => {
     let reference_id = (Date.now()%100000).toString();
  
     //TODO mapping reference_id to callback accessor to sign
-    let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
-    accessorSign[accessor_id] = sid;
+    //let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
 
-    let { request_id, exist, /*secret*/ } = await API.createNewIdentity({
+    let { request_id, exist, /*secret*/ accessor_id } = await API.createNewIdentity({
       namespace,
       identifier,
       reference_id,
       accessor_type: 'awesome-type',
       accessor_public_key,
-      accessor_id,
+      //accessor_id,
       ial: 2.3
     });
+
+    accessorSign[accessor_id] = sid;
+    await db.setAccessorIdBySid(sid, accessor_id);
   
     //fs.writeFileSync(config.keyPath + 'secret_' + sid, secret, 'utf8');
     onboardMapping[request_id] = sid;
@@ -144,7 +146,7 @@ async function createResponse(req, res, status) {
       secret: fs.readFileSync(config.keyPath + 'secret_' + sid, 'utf8'),
       status,
       signature: zkProof.signMessage(savedRequest.request_message, config.keyPath + sid),
-      accessor_id: 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce,
+      accessor_id: (await db.getAccessorIdBySid(sid)).accessor_id,
     });
 
     db.removeRequest(requestId);
