@@ -12,8 +12,10 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5002;
 (async () => {
   for (;;) {
     try {
-      await API.setCallbackUrl({ url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/request` });
-      await API.registerAccessorCallback(`http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/accessor`);
+      await API.setCallbackUrls({
+        incoming_request_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/request`,
+        accessor_sign_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/accessor`,
+      });
       break;
     } catch (error) {
       console.error('Error setting callback URL at NDID API', error);
@@ -45,7 +47,7 @@ app.post('/idp/accessor', async (req, res) => {
   let sid = accessorSign[accessor_id];
   //console.log(sid,hash_of_sid);
   res.status(200).send({
-    signature: zkProof.accessorSign(sid, sid_hash)
+    signature: zkProof.accessorSign(sid, sid_hash),
   });
 });
 

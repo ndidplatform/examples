@@ -33,7 +33,7 @@ export async function registerAccessorCallback(url) {
   }
 }
 
-export const getCallbackUrl = async () => {
+export const getCallbackUrls = async () => {
   try {
     const response = await fetch(`${apiServerAddress}/idp/callback`, {
       method: 'GET',
@@ -58,7 +58,10 @@ export const getCallbackUrl = async () => {
   }
 };
 
-export const setCallbackUrl = async ({ url }) => {
+export const setCallbackUrls = async ({
+  incoming_request_url,
+  accessor_sign_url,
+}) => {
   try {
     const response = await fetch(`${apiServerAddress}/idp/callback`, {
       method: 'POST',
@@ -67,7 +70,8 @@ export const setCallbackUrl = async ({ url }) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        url,
+        incoming_request_url,
+        accessor_sign_url,
       }),
     });
 
