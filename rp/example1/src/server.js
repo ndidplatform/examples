@@ -46,17 +46,17 @@ app.post('/createRequest', async (req, res) => {
       namespace,
       identifier,
       reference_id: referenceId,
-      idp_list: [],
+      idp_id_list: [],
       callback_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/rp/request/${referenceId}`,
       data_request_list: withMockData
         ? [
             {
               service_id: 'bank_statement',
               as_id_list: ['as1', 'as2', 'as3'],
-              count: 1,
-              request_params: {
+              min_as: 1,
+              request_params: JSON.stringify({
                 format: 'pdf',
-              },
+              }),
             },
           ]
         : [],

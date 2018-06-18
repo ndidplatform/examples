@@ -146,7 +146,7 @@ socket.on('request_status', (event) => {
         return (
           HtmlString +
           `<div>${service.service_id}: ${service.signed_data_count}/${
-            service.count
+            service.min_as
           }</div>`
         );
       },
@@ -157,7 +157,7 @@ socket.on('request_status', (event) => {
         return (
           HtmlString +
           `<div>${service.service_id}: ${service.received_data_count}/${
-            service.count
+            service.min_as
           }</div>`
         );
       },
