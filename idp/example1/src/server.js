@@ -141,7 +141,7 @@ async function createResponse(req, res, status) {
       request_id: requestId,
       namespace: user.namespace,
       identifier: user.identifier,
-      ial: 3,
+      ial: 2.3,
       aal: 3,
       secret: fs.readFileSync(config.keyPath + 'secret_' + sid, 'utf8'),
       status,
