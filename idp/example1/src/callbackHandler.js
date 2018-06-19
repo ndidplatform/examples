@@ -14,6 +14,7 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5002;
     try {
       await API.setCallbackUrls({
         incoming_request_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/request`,
+        identity_result_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/identity`,
         accessor_sign_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/accessor`,
       });
       break;
@@ -35,7 +36,17 @@ app.use(bodyParser.json({ limit: '2mb' }));
 app.post('/idp/request', async (req, res) => {
   const callbackData = req.body;
 
-  console.log('Received callback from NDID API:', callbackData);
+  console.log('Received incoming request callback from NDID API:', callbackData);
+
+  eventEmitter.emit('callback', callbackData);
+
+  res.status(200).end();
+});
+
+app.post('/idp/identity', async (req, res) => {
+  const callbackData = req.body;
+
+  console.log('Received identity result callback from NDID API:', callbackData);
 
   eventEmitter.emit('callback', callbackData);
 

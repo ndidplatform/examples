@@ -60,7 +60,9 @@ export const getCallbackUrls = async () => {
 
 export const setCallbackUrls = async ({
   incoming_request_url,
+  identity_result_url,
   accessor_sign_url,
+  error_url,
 }) => {
   try {
     const response = await fetch(`${apiServerAddress}/idp/callback`, {
@@ -71,7 +73,9 @@ export const setCallbackUrls = async ({
       },
       body: JSON.stringify({
         incoming_request_url,
+        identity_result_url,
         accessor_sign_url,
+        error_url,
       }),
     });
 

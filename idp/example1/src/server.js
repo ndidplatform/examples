@@ -185,7 +185,7 @@ ws.on('connection', function(_socket) {
 ndidCallbackEvent.on('callback', (request) => {
   // Save request to local DB
   //db.saveRequest(db.getUserByCid(request.identifier).id, request);
-  if(request.type === 'onboard_consent_request') {
+  if(request.type === 'create_identity_result') {
     socket.emit('onboardResponse', request);
     fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
     return;
