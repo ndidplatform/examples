@@ -23,6 +23,34 @@ const apiServerAddress =
   }
 };*/
 
+export const sendData = async ({
+  request_id,
+  service_id,
+  data,
+}) => {
+  try {
+    const response = await fetch(`${apiServerAddress}/as/data/${request_id}/${service_id}`, {
+      method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({data}),
+    });
+    if (!response.ok) {
+      if (response.status === 400 || response.status === 500) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
+      throw response;
+    }
+
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const registerAsService = async ({
   url,
   service_id,

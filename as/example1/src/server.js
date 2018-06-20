@@ -45,10 +45,16 @@ app.post('/as/service/bank_statement', async (req, res) => {
   console.log('Callback from NDID API >', data);
 
   //set timeout to simulate request processing
+  res.status(204).end();
   setTimeout(() => {
-    res.status(200).json({
-      data: 'mock data',
+    API.sendData({
+      data: 'Mock data async',
+      service_id: 'bank_statement',
+      request_id: data.request_id,
     });
+    /*res.status(200).json({
+      data: 'mock data',
+    });*/
   }, 2000);
 });
 
