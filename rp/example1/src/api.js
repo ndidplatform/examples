@@ -4,6 +4,7 @@ const apiServerAddress =
   process.env.API_SERVER_ADDRESS || 'http://localhost:8080';
 
 export const createRequest = async ({
+  mode,
   namespace,
   identifier,
   reference_id,
@@ -26,6 +27,7 @@ export const createRequest = async ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          mode,
           reference_id,
           idp_list,
           callback_url,
