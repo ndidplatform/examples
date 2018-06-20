@@ -98,9 +98,9 @@ function createListItem(requestObject) {
       dataLi.classList.add('data-list-item');
       if (dataObject.as_id_list) {
         let asList = dataObject.as_id_list.join(', ');
-        dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.count} of ${asList}`;
+        dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.min_as} of ${asList}`;
       } else {
-        dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.count} AS`;
+        dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.min_as} AS`;
       }
       dataDiv.appendChild(dataLi);
     }
