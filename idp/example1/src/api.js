@@ -177,6 +177,36 @@ export async function createNewIdentity(data) {
   }
 }
 
+export async function addAccessor(data) {
+  try {
+    const response = await fetch(`${apiServerAddress}/identity/${data.namespace}/${data.identifier}/accessors`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (
+        response.status === 400 ||
+        response.status === 500 ||
+        response.status === 403
+      ) {
+        const errorJson = await response.json();
+        throw errorJson;
+      }
+      throw response;
+    }
+
+    let tmp = await response.json();
+    return tmp;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const setDpkiCallbackUrl = async ({ sign_url, decrypt_url }) => {
   try {
     const response = await fetch(

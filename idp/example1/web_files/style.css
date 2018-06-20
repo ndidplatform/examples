@@ -22,3 +22,9 @@
 .data-list-item {
   margin-left: 1.25rem;
 }
+
+.identity-card {
+  padding-bottom: 1em;
+  width: 50%;
+  margin-top: 2em;
+}

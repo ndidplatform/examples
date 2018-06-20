@@ -107,6 +107,46 @@ app.post('/identity', async (req, res) => {
   }
 });
 
+app.post('/accessors', async (req, res) => {
+  const { namespace, identifier } = req.body;
+  try {
+
+    let sid = namespace + ':' + identifier;
+    let fileName = sid + Date.now().toString();
+    //gen new key pair
+    zkProof.genNewKeyPair(fileName);
+
+    let accessor_public_key = fs.readFileSync(config.keyPath + fileName + '.pub','utf8');
+    //let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync(config.keyPath + sid,'utf8'));
+    let reference_id = (Date.now()%100000).toString();
+ 
+    //TODO mapping reference_id to callback accessor to sign
+    //let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
+
+    let { request_id, /*secret*/ accessor_id } = await API.addAccessor({
+      namespace,
+      identifier,
+      reference_id,
+      accessor_type: 'awesome-type',
+      accessor_public_key,
+      //accessor_id,
+      ial: 2.3
+    });
+
+    accessorSign[accessor_id] = fileName;
+    onboardMapping[request_id] = fileName;
+    fs.writeFileSync(config.keyPath + 'nonce_' + fileName, nonce, 'utf8');
+  
+    res.status(200).send({
+      request_id,
+      accessor_id,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error.error ? error.error.message : error);
+  }
+});
+
 app.get('/home/:namespace/:identifier', (req, res) => {
   res.sendFile(path.join(__dirname, '../web_files/index.html'));
 });
@@ -179,6 +219,7 @@ const ws = io(server);
 let socket;
 
 ws.on('connection', function(_socket) {
+  console.log('connected')
   socket = _socket;
 });
 
@@ -187,7 +228,17 @@ ndidCallbackEvent.on('callback', (request) => {
   //db.saveRequest(db.getUserByCid(request.identifier).id, request);
   if(request.type === 'create_identity_result') {
     socket.emit('onboardResponse', request);
-    fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
+    if(request.secret) {
+      fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
+    }
+    return;
+  }
+  if(request.type === 'add_accessor_result') {
+    socket.emit('accessorResponse', request);
+    console.log('EMITTED',request)
+    if(request.secret) {
+      fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
+    }
     return;
   }
   let user = db.getUserByIdentifier(request.namespace, request.identifier);

@@ -55,10 +55,9 @@ app.post('/idp/identity', async (req, res) => {
 
 app.post('/idp/accessor', async (req, res) => {
   let { sid_hash, accessor_id } = req.body;
-  let sid = accessorSign[accessor_id];
   //console.log(sid,hash_of_sid);
   res.status(200).send({
-    signature: zkProof.accessorSign(sid, sid_hash),
+    signature: zkProof.accessorSign(accessorSign[accessor_id], sid_hash),
   });
 });
 

@@ -14,10 +14,16 @@
       <span class="navbar-brand mb-0 h1">IDP</span>
     </nav>
 
-    <div class="container">
-      Namespace: <input type="textbox" id="namespace" class="form-control"></input>
-      Identifier: <input type="textbox" id="identifier" class="form-control"></input>
-      <br/><button class="btn btn-block btn-primary" id="createNewIdentity">Create</button>
+    <div class="container card identity-card">
+      Namespace: <input type="textbox" id="namespaceNew" class="form-control"></input>
+      Identifier: <input type="textbox" id="identifierNew" class="form-control"></input>
+      <br/><button class="btn btn-block btn-primary" id="createNewIdentity">Create New Identity</button>
+    </div>
+
+    <div class="container card identity-card">
+      Namespace: <input type="textbox" id="namespaceAdd" class="form-control"></input>
+      Identifier: <input type="textbox" id="identifierAdd" class="form-control"></input>
+      <br/><button class="btn btn-block btn-primary" id="addAccessor">Add Accessor</button>
     </div>
 
     <script src="/bootstrap/js/bootstrap.min.js"></script>
