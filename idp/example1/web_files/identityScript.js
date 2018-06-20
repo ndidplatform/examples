@@ -1,4 +1,35 @@
 const socket = io('/');
+let request_id, namespace, identifier;
+
+/*var onevent = socket.onevent;
+socket.onevent = function (packet) {
+    var args = packet.data || [];
+    onevent.call (this, packet);    // original call
+    packet.data = ['*'].concat(args);
+    onevent.call(this, packet);      // additional call to catch-all
+};
+
+socket.on('*',function(event,data) {
+  console.log(event);
+  console.log(data);
+});*/
+
+socket.on('onboardResponse', (request) => {
+  if (request.request_id !== request_id) return;
+  if (request.success) createSuccess(namespace, identifier);
+  else {
+    alert('Cannot create identity: ' + request.reason);
+    enableButton();
+  }
+});
+
+socket.on('accessorResponse', (request) => {
+  console.log('accessorResponse');
+  if (request.request_id !== request_id) return;
+  if (request.success) alert('Accessor added.');
+  else alert('Cannot add accessor: ' + request.reason);
+  enableButton();
+});
 
 function disableButton(create) {
   document.getElementById('createNewIdentity').disabled = true;
@@ -21,8 +52,8 @@ function createSuccess(namespace, identifier) {
 
 function createNewIdentity() {
   disableButton(true);
-  let namespace = document.getElementById('namespaceNew').value;
-  let identifier = document.getElementById('identifierNew').value;
+  namespace = document.getElementById('namespaceNew').value;
+  identifier = document.getElementById('identifierNew').value;
 
   fetch('/identity', {
     method: 'POST',
@@ -40,24 +71,13 @@ function createNewIdentity() {
     }
     return response.json();
   })
-  .then(({ request_id, exist }) => {
-    if (request_id) {
-      if (!exist) createSuccess(namespace, identifier);
+  .then((result) => {
+    if (result.request_id) {
+      if (!result.exist) createSuccess(namespace, identifier);
       else {
-
+        request_id = result.request_id;
         document.getElementById('createNewIdentity').innerHTML =
           'Waiting for consent at requestID: ' + request_id.toString().substr(0,8) + '...';
-
-        //open eventlistener wait for redirected
-        socket.on('onboardResponse', (request) => {
-          if (request.request_id !== request_id) return;
-          if (request.success) createSuccess(namespace, identifier);
-          else {
-            alert('Cannot create identity: ' + request.reason);
-            enableButton();
-          }
-        });
-
       }
     } else {
       alert('Cannot create identity: Request ID is missing');
@@ -91,20 +111,11 @@ function addAccessor() {
     }
     return response.json();
   })
-  .then(({ request_id }) => {
-    if (request_id) {
+  .then((result) => {
+    if (result.request_id) {
+      request_id = result.request_id;
       document.getElementById('addAccessor').innerHTML =
         'Waiting for consent at requestID: ' + request_id.toString().substr(0,8) + '...';
-
-      socket.on('accessorResponse', (request) => {
-        if (request.request_id !== request_id) return;
-        if (request.success) alert('Accessor added.');
-        else {
-          alert('Cannot add accessor: ' + request.reason);
-          enableButton();
-        }
-      });
-
     } else {
       alert('Cannot add accessor: Request ID is missing');
       enableButton();

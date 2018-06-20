@@ -216,26 +216,25 @@ app.get('/getUserId/:namespace/:identifier', (req, res) => {
 const server = http.createServer(app);
 
 const ws = io(server);
-let socket;
+/*let socket;
 
 ws.on('connection', function(_socket) {
-  console.log('connected')
   socket = _socket;
-});
+});*/
 
 ndidCallbackEvent.on('callback', (request) => {
   // Save request to local DB
   //db.saveRequest(db.getUserByCid(request.identifier).id, request);
   if(request.type === 'create_identity_result') {
-    socket.emit('onboardResponse', request);
+    ws.emit('onboardResponse', request);
     if(request.secret) {
       fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
     }
     return;
   }
   if(request.type === 'add_accessor_result') {
-    socket.emit('accessorResponse', request);
-    console.log('EMITTED',request)
+    ws.emit('accessorResponse', request);
+    console.log('EMITTED',request);
     if(request.secret) {
       fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
     }
@@ -247,7 +246,7 @@ ndidCallbackEvent.on('callback', (request) => {
     user.id,
     request
   );
-  socket.emit('newRequest', request);
+  ws.emit('newRequest', request);
 });
 
 server.listen(WEB_SERVER_PORT);
