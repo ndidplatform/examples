@@ -13,7 +13,7 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
 (async () => {
   for (;;) {
     try {
-      await API.setCallbackUrl({
+      await API.registerAsService({
         url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/as/service/bank_statement`,
         service_id: 'bank_statement',
         service_name: 'Bank statement description',

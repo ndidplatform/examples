@@ -23,7 +23,7 @@ const apiServerAddress =
   }
 };*/
 
-export const setCallbackUrl = async ({
+export const registerAsService = async ({
   url,
   service_id,
   service_name,
