@@ -43,6 +43,7 @@ app.post('/createRequest', async (req, res) => {
 
   try {
     const request = await API.createRequest({
+      mode: 3,
       namespace,
       identifier,
       reference_id: referenceId,
