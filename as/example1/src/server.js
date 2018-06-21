@@ -1,9 +1,25 @@
+/*
+Copyright (c) 2018, 2019 National Digital ID COMPANY LIMITED 
+
+This file is part of NDID software.
+
+NDID is the free software: you can redistribute it and/or modify  it under the terms of the Affero GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
+
+NDID is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Affero GNU General Public License for more details.
+
+You should have received a copy of the Affero GNU General Public License along with the NDID source code.  If not, see https://www.gnu.org/licenses/agpl.txt.
+
+please contact info@ndid.co.th for any further questions
+*/
+
 import 'source-map-support/register';
 
 import express from 'express';
 import bodyParser from 'body-parser';
 
 import * as API from './api';
+import path from 'path';
 
 import './externalCryptoCallback';
 
@@ -56,6 +72,14 @@ app.post('/as/service/bank_statement', async (req, res) => {
       data: 'mock data',
     });*/
   }, 2000);
+});
+
+app.get('/license', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../LICENSE'));
+});
+
+app.get('/source', (req, res) => {
+  res.status(200).send('https://github.com/ndidplatform/examples');
 });
 
 app.listen(NDID_API_CALLBACK_PORT, () => {

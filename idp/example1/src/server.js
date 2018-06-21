@@ -1,3 +1,18 @@
+/*
+Copyright (c) 2018, 2019 National Digital ID COMPANY LIMITED 
+
+This file is part of NDID software.
+
+NDID is the free software: you can redistribute it and/or modify  it under the terms of the Affero GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
+
+NDID is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Affero GNU General Public License for more details.
+
+You should have received a copy of the Affero GNU General Public License along with the NDID source code.  If not, see https://www.gnu.org/licenses/agpl.txt.
+
+please contact info@ndid.co.th for any further questions
+*/
+
 import 'source-map-support/register';
 
 import path from 'path';
@@ -213,9 +228,17 @@ app.get('/getUserId/:namespace/:identifier', (req, res) => {
   return res.status(200).send(user ? user.id.toString() : '0');
 });
 
+app.get('/license', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../LICENSE'));
+});
+
+app.get('/source', (req, res) => {
+  res.status(200).send('https://github.com/ndidplatform/examples');
+});
+
 const server = http.createServer(app);
 
-const ws = io(server);
+const ws = io(server)
 /*let socket;
 
 ws.on('connection', function(_socket) {
