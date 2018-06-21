@@ -132,7 +132,6 @@ app.post('/accessors', async (req, res) => {
       accessor_type: 'awesome-type',
       accessor_public_key,
       //accessor_id,
-      ial: 2.3
     });
 
     accessorSign[accessor_id] = fileName;
