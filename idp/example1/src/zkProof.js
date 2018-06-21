@@ -29,8 +29,8 @@ export function signMessage(messageToSign, privateKeyPath) {
   return result.stdout.toString('base64');
 }
 
-export function accessorSign(sid, text) {
-  let privateKey = fs.readFileSync(config.keyPath + sid, 'utf8');
+export function accessorSign(fileName, text) {
+  let privateKey = fs.readFileSync(config.keyPath + fileName, 'utf8');
   const encrypted = crypto.privateEncrypt(
     privateKey,
     Buffer.from(text, 'base64')

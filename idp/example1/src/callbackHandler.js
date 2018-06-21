@@ -54,11 +54,15 @@ app.post('/idp/identity', async (req, res) => {
 });
 
 app.post('/idp/accessor', async (req, res) => {
-  let { sid_hash, accessor_id } = req.body;
+  let { sid_hash, accessor_id, reference_id } = req.body;
+  let fileName = accessorSign[accessor_id] 
+  ? accessorSign[accessor_id] : accessorSign[reference_id];
   //console.log(sid,hash_of_sid);
   res.status(200).send({
-    signature: zkProof.accessorSign(accessorSign[accessor_id], sid_hash),
+    signature: zkProof.accessorSign(fileName, sid_hash),
   });
+  //test accessor/sign failed
+  //res.status(500).end();
 });
 
 app.listen(NDID_API_CALLBACK_PORT, () =>

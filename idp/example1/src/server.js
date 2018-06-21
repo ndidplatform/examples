@@ -62,7 +62,7 @@ app.get('/identity', (req, res) => {
   res.sendFile(path.join(__dirname, '../web_files/identity.html'));
 });
 
-let onboardMapping = {};
+let secretFilenameMapping = {};
 
 app.post('/identity', async (req, res) => {
   const { namespace, identifier } = req.body;
@@ -75,6 +75,7 @@ app.post('/identity', async (req, res) => {
     let accessor_public_key = fs.readFileSync(config.keyPath + sid + '.pub','utf8');
     //let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync(config.keyPath + sid,'utf8'));
     let reference_id = (Date.now()%100000).toString();
+    accessorSign[reference_id] = sid;
  
     //TODO mapping reference_id to callback accessor to sign
     //let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
@@ -93,7 +94,7 @@ app.post('/identity', async (req, res) => {
     await db.setAccessorIdBySid(sid, accessor_id);
   
     //fs.writeFileSync(config.keyPath + 'secret_' + sid, secret, 'utf8');
-    onboardMapping[request_id] = sid;
+    secretFilenameMapping[request_id] = sid;
     fs.writeFileSync(config.keyPath + 'nonce_' + sid, nonce, 'utf8');
     db.addUser(namespace, identifier);
   
@@ -119,6 +120,7 @@ app.post('/accessors', async (req, res) => {
     let accessor_public_key = fs.readFileSync(config.keyPath + fileName + '.pub','utf8');
     //let secret =  zkProof.calculateSecret(namespace,identifier, fs.readFileSync(config.keyPath + sid,'utf8'));
     let reference_id = (Date.now()%100000).toString();
+    accessorSign[reference_id] = fileName;
  
     //TODO mapping reference_id to callback accessor to sign
     //let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
@@ -134,7 +136,7 @@ app.post('/accessors', async (req, res) => {
     });
 
     accessorSign[accessor_id] = fileName;
-    onboardMapping[request_id] = fileName;
+    secretFilenameMapping[request_id] = fileName;
     fs.writeFileSync(config.keyPath + 'nonce_' + fileName, nonce, 'utf8');
   
     res.status(200).send({
@@ -228,7 +230,7 @@ ndidCallbackEvent.on('callback', (request) => {
   if(request.type === 'create_identity_result') {
     ws.emit('onboardResponse', request);
     if(request.secret) {
-      fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
+      fs.writeFileSync(config.keyPath + 'secret_' + secretFilenameMapping[request.request_id], request.secret, 'utf8');
     }
     return;
   }
@@ -236,7 +238,7 @@ ndidCallbackEvent.on('callback', (request) => {
     ws.emit('accessorResponse', request);
     console.log('EMITTED',request);
     if(request.secret) {
-      fs.writeFileSync(config.keyPath + 'secret_' + onboardMapping[request.request_id], request.secret, 'utf8');
+      fs.writeFileSync(config.keyPath + 'secret_' + secretFilenameMapping[request.request_id], request.secret, 'utf8');
     }
     return;
   }
