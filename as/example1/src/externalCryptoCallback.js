@@ -33,3 +33,4 @@ if (config.useExternalCryptoService) {
     }
   })();
 }
+else ready = true;
