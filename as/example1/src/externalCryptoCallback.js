@@ -2,6 +2,11 @@ import * as API from './api';
 
 import * as config from './config';
 
+let ready = false;
+export function waitForExternalCryptoReady() { 
+  return ready; 
+}
+
 if (config.useExternalCryptoService) {
   const EXTERNAL_CRYPTO_SERVICE_IP =
     process.env.EXTERNAL_CRYPTO_SERVICE_IP || 'localhost';
@@ -18,6 +23,7 @@ if (config.useExternalCryptoService) {
         await API.setDpkiCallbackUrlMaster({
           url: `http://${EXTERNAL_CRYPTO_SERVICE_IP}:${EXTERNAL_CRYPTO_SERVICE_PORT}/dpki/master/sign`,
         });
+        ready = true;
         break;
       } catch (error) {
         console.error('Error setting DPKI callback URL at NDID API', error);

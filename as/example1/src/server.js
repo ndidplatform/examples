@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 
 import * as API from './api';
 
-import './externalCryptoCallback';
+import { waitForExternalCryptoReady } from './externalCryptoCallback';
 
 const NDID_API_CALLBACK_IP = process.env.NDID_API_CALLBACK_IP || 'localhost';
 const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
@@ -13,6 +13,12 @@ const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5003;
 (async () => {
   for (;;) {
     try {
+      if(!waitForExternalCryptoReady()) {
+        await new Promise((resolve) => {
+          setTimeout(resolve,100);
+        });
+        continue;
+      }
       await API.registerAsService({
         url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/as/service/bank_statement`,
         service_id: 'bank_statement',

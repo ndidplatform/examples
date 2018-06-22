@@ -54,7 +54,7 @@ app.post('/createRequest', async (req, res) => {
             {
               service_id: 'bank_statement',
               as_id_list: ['as1', 'as2', 'as3'],
-              min_as: 2,
+              min_as: 1,
               request_params: JSON.stringify({
                 format: 'pdf',
               }),
