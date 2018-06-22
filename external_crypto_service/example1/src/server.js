@@ -41,8 +41,10 @@ app.use(bodyParser.json({ limit: '2mb' }));
 // });
 
 app.post('/dpki/decrypt', async (req, res) => {
+
   try {
     const { node_id, encrypted_message, key_type } = req.body;
+    console.log('========== decrypt', node_id);
 
     const keyPath = path.join(__dirname, '..', 'devKey', node_id);
 
@@ -71,6 +73,7 @@ app.post('/dpki/sign', async (req, res) => {
       sign_method,
     } = req.body;
 
+    console.log('sign', node_id);
     const keyPath = path.join(__dirname, '..', 'devKey', node_id);
 
     const key = fs.readFileSync(keyPath, 'utf8').toString();
@@ -100,6 +103,7 @@ app.post('/dpki/master/sign', async (req, res) => {
     } = req.body;
 
     const keyPath = path.join(__dirname, '..', 'devKey', node_id + '_master');
+    console.log('==================== master-sign', node_id);
 
     const key = fs.readFileSync(keyPath, 'utf8').toString();
 

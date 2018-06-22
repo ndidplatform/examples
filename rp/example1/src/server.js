@@ -54,7 +54,7 @@ app.post('/createRequest', async (req, res) => {
             {
               service_id: 'bank_statement',
               as_id_list: ['as1', 'as2', 'as3'],
-              min_as: 1,
+              min_as: 2,
               request_params: JSON.stringify({
                 format: 'pdf',
               }),
@@ -114,18 +114,13 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
     if (request.latest_idp_response_valid === false) {
       socket && socket.emit('invalid', { referenceId });
       return;
-    } else if (request.closed) {
-      socket && socket.emit('closed', { referenceId });
-      return;
-    } else if (request.timed_out) {
-      socket && socket.emit('timeout', { referenceId });
-      return;
     } else {
-      socket &&
-        socket.emit('request_status', {
-          referenceId,
-          ...request,
-        });
+      
+      socket && socket.emit('request_status', {
+        referenceId,
+        ...request,
+      });
+
       if (request.status === 'completed') {
         if (
           request.service_list &&
@@ -136,13 +131,19 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
             requestId: request.request_id,
           });
         }
-      }
-      if (
+      } else if (
         request.status === 'rejected' &&
         request.answered_idp_count === request.min_idp
       ) {
         closeRequest(request.request_id);
+      } else if (request.closed) {
+        socket && socket.emit('closed', { referenceId });
+        return;
+      } else if (request.timed_out) {
+        socket && socket.emit('timeout', { referenceId });
+        return;
       }
+
     }
   } else if (type === 'error') {
     // TODO: callback when using async createRequest and got error
