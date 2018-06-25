@@ -33,6 +33,20 @@ const app = express();
 
 app.use(bodyParser.json({ limit: '2mb' }));
 
+app.post('/idp/response/:request_id', async (req, res) => {
+  const callbackData = req.body;
+
+  console.log('Received response result callback from NDID API:', 
+    callbackData, 
+    'requestID:', 
+    req.params.request_id
+  );
+
+  //eventEmitter.emit('callback', callbackData);
+
+  res.status(200).end();
+});
+
 app.post('/idp/request', async (req, res) => {
   const callbackData = req.body;
 

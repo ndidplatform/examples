@@ -3,6 +3,9 @@ import fetch from 'node-fetch';
 const apiServerAddress =
   process.env.API_SERVER_ADDRESS || 'http://localhost:8081';
 
+const NDID_API_CALLBACK_IP = process.env.NDID_API_CALLBACK_IP || 'localhost';
+const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5002
+
 export async function registerAccessorCallback(url) {
   try {
     const response = await fetch(`${apiServerAddress}/idp/accessor/callback`, {
@@ -124,6 +127,7 @@ export const createIdpResponse = async ({
         status,
         signature,
         accessor_id,
+        callback_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/response/${request_id}`,
       }),
     });
 
