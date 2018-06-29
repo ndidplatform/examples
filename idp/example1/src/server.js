@@ -174,16 +174,13 @@ app.get('/requests/:namespace/:identifier', async function(req, res) {
   res.status(200).send(requests);
 });
 
-async function createResponse(req, res, status) {
-  const { userId, requestId } = req.body;
-
+async function createResponse(userId, requestId, status) {
   const user = db.getUser(userId);
   const savedRequest = db.getRequest(userId, requestId);
   const sid = user.namespace + ':' + user.identifier;
   let nonce = fs.readFileSync(config.keyPath + 'nonce_' + sid, 'utf8');
   if (!savedRequest) {
-    res.status(500).json('Unknown request ID');
-    return;
+    throw 'Unknown request ID';
   }
 
   try {
@@ -204,19 +201,30 @@ async function createResponse(req, res, status) {
         config.ndidApiCallbackPort
       }/idp/response`,
     });
-    res.status(200).end();
   } catch (error) {
     //TODO handle when error with other reason than closed or timed out
-    res.status(500).json(error.error ? error.error.message : error);
+    throw error;
   }
 }
 
 app.post('/accept', async (req, res) => {
-  createResponse(req, res, 'accept');
+  try {
+    const { userId, requestId } = req.body;
+    await createResponse(userId, requestId, 'accept');
+    res.status(200).end();
+  } catch (error) {
+    res.status(500).json(error.error ? error.error.message : error);
+  }
 });
 
 app.post('/reject', async (req, res) => {
-  createResponse(req, res, 'reject');
+  try {
+    const { userId, requestId } = req.body;
+    await createResponse(userId, requestId, 'reject');
+    res.status(200).end();
+  } catch (error) {
+    res.status(500).json(error.error ? error.error.message : error);
+  }
 });
 
 app.get('/getUserId/:namespace/:identifier', (req, res) => {
