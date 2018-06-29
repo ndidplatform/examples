@@ -9,6 +9,19 @@ socket.on('newRequest', (request) => {
   // Update request list
   fetchAndUpdateRequestList();
 });
+
+socket.on('responseResult', (result) => {
+  const { request_id, success, error } = result;
+  if (success === false) {
+    window.alert(
+      `Response to request ID: ${request_id} has failed with error: ${
+        error.message
+      } (${error.code})`
+    );
+  }
+  fetchAndUpdateRequestList();
+});
+
 window.addEventListener('load', fetchAndUpdateRequestList);
 
 let namespace, identifier, userId;
@@ -23,7 +36,7 @@ function fetchAndUpdateRequestList() {
       return response.text();
     })
     .then((_userId) => {
-      if(_userId === '0') {
+      if (_userId === '0') {
         alert('User not found');
         window.location = '/identity';
       }
@@ -85,22 +98,28 @@ function createListItem(requestObject) {
 
   let infoDiv = document.createElement('div');
   infoDiv.classList.add('request-info');
-  infoDiv.innerHTML = `<div style="word-break: break-all;"><b>Request ID</b>: ${requestObject.request_id}</div>
+  infoDiv.innerHTML = `<div style="word-break: break-all;"><b>Request ID</b>: ${
+    requestObject.request_id
+  }</div>
     <div><b>Message</b>: ${requestObject.request_message}</div>`;
 
-  if(requestObject.data_request_list.length !== 0) {
+  if (requestObject.data_request_list.length !== 0) {
     let dataDiv = document.createElement('div');
     dataDiv.innerHTML = `<b>Request data</b>:<br/>`;
 
-    for(let i in requestObject.data_request_list) {
+    for (let i in requestObject.data_request_list) {
       let dataObject = requestObject.data_request_list[i];
       let dataLi = document.createElement('li');
       dataLi.classList.add('data-list-item');
       if (dataObject.as_id_list) {
         let asList = dataObject.as_id_list.join(', ');
-        dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.min_as} of ${asList}`;
+        dataLi.innerHTML = `${dataObject.service_id} from ${
+          dataObject.min_as
+        } of ${asList}`;
       } else {
-        dataLi.innerHTML = `${dataObject.service_id} from ${dataObject.min_as} AS`;
+        dataLi.innerHTML = `${dataObject.service_id} from ${
+          dataObject.min_as
+        } AS`;
       }
       dataDiv.appendChild(dataLi);
     }
@@ -115,18 +134,10 @@ function createListItem(requestObject) {
 
   if (!requestObject.processed) {
     buttonsDiv.appendChild(
-      createRequestButton(
-        userId,
-        requestObject.request_id,
-        'accept'
-      )
+      createRequestButton(userId, requestObject.request_id, 'accept')
     );
     buttonsDiv.appendChild(
-      createRequestButton(
-        userId,
-        requestObject.request_id,
-        'reject'
-      )
+      createRequestButton(userId, requestObject.request_id, 'reject')
     );
   }
   return li;
@@ -146,6 +157,7 @@ function createRequestButton(userId, requestId, action) {
   buttonElement.type = 'button';
   buttonElement.classList.add('btn');
   buttonElement.classList.add('btn-block');
+  buttonElement.dataset.requestId = requestId;
   let apiUrlPath;
   if (action === 'accept') {
     buttonElement.classList.add('btn-success');
@@ -157,6 +169,12 @@ function createRequestButton(userId, requestId, action) {
     apiUrlPath = '/reject';
   }
   buttonElement.addEventListener('click', (event) => {
+    const buttons = document.querySelectorAll(
+      `button[data-request-id="${requestId}"]`
+    );
+    buttons.forEach((button) => {
+      button.disabled = true;
+    });
     fetch(apiUrlPath, {
       method: 'POST',
       headers: {
@@ -167,19 +185,21 @@ function createRequestButton(userId, requestId, action) {
         userId,
       }),
     })
-    .then((response) => {
-      fetchAndUpdateRequestList();
-      if (response.status !== 200) {
-        throw response;
-      }
-      return response.json();
-    })
-    // .then((json) => {
-    //   //console.log(json);
-    // })
-    .catch((error) => {
-      error.json().then((errorMessage) => window.alert(errorMessage));
-    });
+      .then((response) => {
+        if (response.status !== 200) {
+          throw response;
+        }
+        return response.json();
+      })
+      // .then((json) => {
+      //   //console.log(json);
+      // })
+      .catch((error) => {
+        error.json().then((errorMessage) => window.alert(errorMessage));
+        buttons.forEach((button) => {
+          button.disabled = false;
+        });
+      });
   });
   return buttonElement;
 }

@@ -14,14 +14,13 @@ import { eventEmitter as ndidCallbackEvent } from './callbackHandler';
 
 import './externalCryptoCallback';
 
+import * as config from './config';
+
 process.on('unhandledRejection', function(reason, p) {
   console.error('Unhandled Rejection:', p, '\nreason:', reason.stack || reason);
 });
 
 const WEB_SERVER_PORT = process.env.SERVER_PORT || 8080;
-
-const NDID_API_CALLBACK_IP = process.env.NDID_API_CALLBACK_IP || 'localhost';
-const NDID_API_CALLBACK_PORT = process.env.NDID_API_CALLBACK_PORT || 5001;
 
 const app = express();
 
@@ -37,7 +36,13 @@ app.get('/', (req, res) => {
 });
 
 app.post('/createRequest', async (req, res) => {
-  const { namespace, identifier, withMockData, request_timeout, min_idp } = req.body;
+  const {
+    namespace,
+    identifier,
+    withMockData,
+    request_timeout,
+    min_idp,
+  } = req.body;
 
   const referenceId = Math.floor(Math.random() * 100000 + 1).toString();
 
@@ -48,7 +53,9 @@ app.post('/createRequest', async (req, res) => {
       identifier,
       reference_id: referenceId,
       idp_id_list: [],
-      callback_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/rp/request/${referenceId}`,
+      callback_url: `http://${config.ndidApiCallbackIp}:${
+        config.ndidApiCallbackPort
+      }/rp/request/${referenceId}`,
       data_request_list: withMockData
         ? [
             {
@@ -115,17 +122,14 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
       socket && socket.emit('invalid', { referenceId });
       return;
     } else {
-      
-      socket && socket.emit('request_status', {
-        referenceId,
-        ...request,
-      });
+      socket &&
+        socket.emit('request_status', {
+          referenceId,
+          ...request,
+        });
 
       if (request.status === 'completed') {
-        if (
-          request.service_list &&
-          request.service_list.length > 0
-        ) {
+        if (request.service_list && request.service_list.length > 0) {
           getCallbackDataFromAS({
             referenceId,
             requestId: request.request_id,
@@ -143,7 +147,6 @@ ndidCallbackEvent.on('callback', function(referenceId, callbackData) {
         socket && socket.emit('timeout', { referenceId });
         return;
       }
-
     }
   } else if (type === 'error') {
     // TODO: callback when using async createRequest and got error

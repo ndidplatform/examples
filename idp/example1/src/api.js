@@ -109,6 +109,7 @@ export const createIdpResponse = async ({
   status,
   signature,
   accessor_id,
+  callback_url,
 }) => {
   try {
     const response = await fetch(`${apiServerAddress}/idp/response`, {
@@ -127,7 +128,7 @@ export const createIdpResponse = async ({
         status,
         signature,
         accessor_id,
-        callback_url: `http://${NDID_API_CALLBACK_IP}:${NDID_API_CALLBACK_PORT}/idp/response/${request_id}`,
+        callback_url,
       }),
     });
 
