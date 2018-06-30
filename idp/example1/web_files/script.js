@@ -196,6 +196,7 @@ function createRequestButton(userId, requestId, action) {
       // })
       .catch((error) => {
         error.json().then((errorMessage) => window.alert(errorMessage));
+        fetchAndUpdateRequestList();
         buttons.forEach((button) => {
           button.disabled = false;
         });

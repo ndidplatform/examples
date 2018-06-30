@@ -202,27 +202,38 @@ async function createResponse(userId, requestId, status) {
       }/idp/response`,
     });
   } catch (error) {
-    //TODO handle when error with other reason than closed or timed out
     throw error;
   }
 }
 
 app.post('/accept', async (req, res) => {
+  const { userId, requestId } = req.body;
   try {
-    const { userId, requestId } = req.body;
     await createResponse(userId, requestId, 'accept');
     res.status(200).end();
   } catch (error) {
+    if (
+      error.error &&
+      (error.error.code === 20025 || error.error.code === 20026)
+    ) {
+      db.removeRequest(requestId);
+    }
     res.status(500).json(error.error ? error.error.message : error);
   }
 });
 
 app.post('/reject', async (req, res) => {
+  const { userId, requestId } = req.body;
   try {
-    const { userId, requestId } = req.body;
     await createResponse(userId, requestId, 'reject');
     res.status(200).end();
   } catch (error) {
+    if (
+      error.error &&
+      (error.error.code === 20025 || error.error.code === 20026)
+    ) {
+      db.removeRequest(requestId);
+    }
     res.status(500).json(error.error ? error.error.message : error);
   }
 });
@@ -271,6 +282,13 @@ ndidCallbackEvent.on('callback', (request) => {
   if (request.type === 'response_result') {
     if (request.success) {
       db.removeRequest(request.request_id);
+    } else {
+      if (
+        request.error &&
+        (request.error.code === 25003 || request.error.code === 25004)
+      ) {
+        db.removeRequest(request.request_id);
+      }
     }
     ws.emit('responseResult', request);
     return;
