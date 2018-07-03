@@ -23,7 +23,10 @@ const app = express();
  */
 function privateDecrypt(privateKey, ciphertext) {
   const buffer = Buffer.from(ciphertext, 'base64');
-  const decrypted = crypto.privateDecrypt(privateKey, buffer);
+  const decrypted = crypto.privateDecrypt({
+    key: privateKey,
+    padding: crypto.constants.RSA_PKCS1_PADDING,
+  }, buffer);
   return decrypted;
 }
 
