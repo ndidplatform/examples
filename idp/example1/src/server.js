@@ -82,9 +82,6 @@ app.post('/identity', async (req, res) => {
       accessor_public_key,
     });
 
-    //TODO mapping reference_id to callback accessor to sign
-    //let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
-
     const { request_id, exist, accessor_id } = await API.createNewIdentity({
       namespace,
       identifier,
@@ -137,9 +134,6 @@ app.post('/accessors', async (req, res) => {
       accessor_public_key,
     });
 
-    //TODO mapping reference_id to callback accessor to sign
-    //let accessor_id = 'some-awesome-accessor-for-' + sid + '-with-nonce-' + nonce;
-
     const { request_id, accessor_id } = await API.addAccessor({
       namespace,
       identifier,
@@ -184,7 +178,6 @@ app.get('/requests/:namespace/:identifier', async function(req, res) {
 async function createResponse(userId, requestId, status) {
   const user = db.getUser(userId);
   const savedRequest = db.getRequest(userId, requestId);
-  const sid = user.namespace + ':' + user.identifier;
   if (!savedRequest) {
     throw 'Unknown request ID';
   }
