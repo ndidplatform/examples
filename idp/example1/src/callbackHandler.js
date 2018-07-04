@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 
 import * as API from './api';
 import * as zkProof from './zkProof';
+import * as db from './db';
 
 import * as config from './config';
 
@@ -32,7 +33,6 @@ import * as config from './config';
 })();
 
 export const eventEmitter = new EventEmitter();
-export let accessorSign = {};
 
 const app = express();
 
@@ -63,12 +63,10 @@ app.post('/idp/identity', async (req, res) => {
 
 app.post('/idp/accessor', async (req, res) => {
   let { sid_hash, accessor_id, reference_id } = req.body;
-  let fileName = accessorSign[accessor_id]
-    ? accessorSign[accessor_id]
-    : accessorSign[reference_id];
+  const { accessor_private_key } = db.getReference(reference_id);
   //console.log(sid,hash_of_sid);
   res.status(200).send({
-    signature: zkProof.accessorSign(fileName, sid_hash),
+    signature: zkProof.accessorSign(accessor_private_key, sid_hash),
   });
   //test accessor/sign failed
   //res.status(500).end();

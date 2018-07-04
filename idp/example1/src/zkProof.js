@@ -20,17 +20,14 @@ export function genNewKeyPair(sid) {
   }
 }
 
-export function signMessage(messageToSign, privateKeyPath) {
-  let result = spawnSync(
-    'openssl',
-    ['dgst', '-sha256', '-sign', privateKeyPath],
-    { input: messageToSign }
-  );
-  return result.stdout.toString('base64');
+export function signMessage(message, privateKey) {
+  return crypto
+    .createSign('SHA256')
+    .update(message)
+    .sign(privateKey, 'base64');
 }
 
-export function accessorSign(fileName, text) {
-  let privateKey = fs.readFileSync(config.keyPath + fileName, 'utf8');
+export function accessorSign(privateKey, text) {
   const encrypted = crypto.privateEncrypt(
     privateKey,
     Buffer.from(text, 'base64')

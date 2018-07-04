@@ -33,22 +33,21 @@ function fetchAndUpdateRequestList() {
   if (!namespace || !identifier) window.location = '/identity';
   fetch('/getUserId/' + namespace + '/' + identifier)
     .then((response) => {
-      return response.text();
-    })
-    .then((_userId) => {
-      if (_userId === '0') {
+      if (response.status === 404) {
         alert('User not found');
         window.location = '/identity';
+        return;
       }
-      userId = _userId.toString();
-      //console.log(userId);
+      return response.json();
+    })
+    .then((_userId) => {
+      userId = _userId.id;
     });
   fetch('/requests/' + namespace + '/' + identifier)
     .then((response) => {
       return response.json();
     })
     .then((json) => {
-      //onsole.log(json);
       hideLoadingIndicators();
       updateRequestList(json);
     })
