@@ -8,7 +8,7 @@ export const createRequest = async ({
   namespace,
   identifier,
   reference_id,
-  idp_list,
+  idp_id_list,
   callback_url,
   data_request_list,
   request_message,
@@ -29,7 +29,7 @@ export const createRequest = async ({
         body: JSON.stringify({
           mode,
           reference_id,
-          idp_list,
+          idp_id_list,
           callback_url,
           data_request_list,
           request_message,
