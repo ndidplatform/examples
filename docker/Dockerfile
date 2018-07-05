@@ -1,8 +1,8 @@
 FROM node:8-alpine as build
 
-COPY idp/example1/package*.json /examples/idp/
-COPY rp/example1/package*.json /examples/rp/
-COPY as/example1/package*.json /examples/as/
+COPY idp/example2/package*.json /examples/idp/
+COPY rp/example2/package*.json /examples/rp/
+COPY as/example2/package*.json /examples/as/
 COPY external_crypto_service/example1/package*.json /examples/dpki/
 
 RUN apk update && apk add --no-cache --virtual .build-deps python make g++
@@ -21,9 +21,9 @@ RUN apk update && apk add --no-cache bash openssl
 
 WORKDIR /examples
 
-COPY idp/example1 /examples/idp
-COPY rp/example1 /examples/rp
-COPY as/example1 /examples/as
+COPY idp/example2 /examples/idp
+COPY rp/example2 /examples/rp
+COPY as/example2 /examples/as
 COPY external_crypto_service/example1 /examples/dpki
 
 COPY docker/start-node.sh /examples
