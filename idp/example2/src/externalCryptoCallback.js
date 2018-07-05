@@ -13,10 +13,8 @@ if (config.useExternalCryptoService) {
       try {
         await API.setDpkiCallbackUrl({
           sign_url: `http://${EXTERNAL_CRYPTO_SERVICE_IP}:${EXTERNAL_CRYPTO_SERVICE_PORT}/dpki/sign`,
+          master_sign_url: `http://${EXTERNAL_CRYPTO_SERVICE_IP}:${EXTERNAL_CRYPTO_SERVICE_PORT}/dpki/master/sign`,
           decrypt_url: `http://${EXTERNAL_CRYPTO_SERVICE_IP}:${EXTERNAL_CRYPTO_SERVICE_PORT}/dpki/decrypt`,
-        });
-        await API.setDpkiCallbackUrlMaster({
-          url: `http://${EXTERNAL_CRYPTO_SERVICE_IP}:${EXTERNAL_CRYPTO_SERVICE_PORT}/dpki/master/sign`,
         });
         break;
       } catch (error) {
