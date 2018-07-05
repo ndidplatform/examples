@@ -1,0 +1,26 @@
+{
+  "name": "ndid-client-app-as-example",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "npx babel src -d ./build/ --source-maps inline",
+    "start": "npm run build && node ./build/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "node-fetch": "^2.1.2",
+    "source-map-support": "^0.5.6"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.19.1",
+    "eslint-plugin-babel": "^5.0.0"
+  }
+}

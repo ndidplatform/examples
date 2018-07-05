@@ -82,10 +82,13 @@ app.post('/identity', async (req, res) => {
       accessor_public_key,
     });
 
-    const { request_id, exist, accessor_id } = await API.createNewIdentity({
+    const { request_id, accessor_id } = await API.createNewIdentity({
+      reference_id,
+      callback_url: `http://${config.ndidApiCallbackIp}:${
+        config.ndidApiCallbackPort
+      }/idp/identity`,
       namespace,
       identifier,
-      reference_id,
       accessor_type: 'RSA',
       accessor_public_key,
       //accessor_id,
@@ -94,13 +97,11 @@ app.post('/identity', async (req, res) => {
 
     db.addOrUpdateReference(reference_id, {
       request_id,
-      exist,
       accessor_id,
     });
 
     res.status(200).send({
       request_id,
-      exist,
     });
   } catch (error) {
     console.error(error);
@@ -135,9 +136,12 @@ app.post('/accessors', async (req, res) => {
     });
 
     const { request_id, accessor_id } = await API.addAccessor({
+      reference_id,
+      callback_url: `http://${config.ndidApiCallbackIp}:${
+        config.ndidApiCallbackPort
+      }/idp/identity/accessor`,
       namespace,
       identifier,
-      reference_id,
       accessor_type: 'RSA',
       accessor_public_key,
       //accessor_id,
@@ -182,8 +186,14 @@ async function createResponse(userId, requestId, status) {
     throw 'Unknown request ID';
   }
 
+  const reference_id = (Date.now() % 100000).toString();
+
   try {
     await API.createIdpResponse({
+      reference_id,
+      callback_url: `http://${config.ndidApiCallbackIp}:${
+        config.ndidApiCallbackPort
+      }/idp/response`,
       request_id: requestId,
       namespace: user.namespace,
       identifier: user.identifier,
@@ -196,10 +206,8 @@ async function createResponse(userId, requestId, status) {
         user.accessors[0].accessor_private_key
       ),
       accessor_id: user.accessors[0].accessor_id,
-      callback_url: `http://${config.ndidApiCallbackIp}:${
-        config.ndidApiCallbackPort
-      }/idp/response`,
     });
+    return reference_id;
   } catch (error) {
     throw error;
   }
@@ -257,9 +265,15 @@ ws.on('connection', function(_socket) {
 });*/
 
 ndidCallbackEvent.on('callback', (data) => {
-  // Save request to local DB
-  //db.saveRequest(db.getUserByCid(request.identifier).id, request);
-  if (data.type === 'create_identity_result') {
+  if (data.type === 'create_identity_request_result') {
+    if (data.success) {
+      db.addOrUpdateReference(data.reference_id, {
+        exist: data.exist,
+      });
+    } else {
+      db.removeReference(data.reference_id);
+    }
+  } else if (data.type === 'create_identity_result') {
     if (data.success) {
       const {
         namespace,
@@ -280,10 +294,11 @@ ndidCallbackEvent.on('callback', (data) => {
       });
     }
     db.removeReference(data.reference_id);
-    ws.emit('onboardResponse', data);
-    return;
-  }
-  if (data.type === 'add_accessor_result') {
+  } else if (data.type === 'add_accessor_request_result') {
+    if (!data.success) {
+      db.removeReference(data.reference_id);
+    }
+  } else if (data.type === 'add_accessor_result') {
     if (data.success) {
       const {
         namespace,
@@ -306,10 +321,7 @@ ndidCallbackEvent.on('callback', (data) => {
       });
     }
     db.removeReference(data.reference_id);
-    ws.emit('accessorResponse', data);
-    return;
-  }
-  if (data.type === 'response_result') {
+  } else if (data.type === 'response_result') {
     if (data.success) {
       db.removeRequest(data.request_id);
     } else {
@@ -320,17 +332,17 @@ ndidCallbackEvent.on('callback', (data) => {
         db.removeRequest(data.request_id);
       }
     }
-    ws.emit('responseResult', data);
-    return;
-  }
-  if (data.type === 'incoming_request') {
+  } else if (data.type === 'incoming_request') {
     const user = db.getUserByIdentifier(data.namespace, data.identifier);
     if (!user) return;
     db.saveRequest(user.id, data);
-    ws.emit('newRequest', data);
+  } else if (data.type === 'error') {
+    // TODO: callback when using async createRequest and got error
+  } else {
+    console.error('Unknown callback type', data);
     return;
   }
-  console.error('Unknown callback type', data);
+  ws.emit('message', data);
 });
 
 server.listen(WEB_SERVER_PORT);
