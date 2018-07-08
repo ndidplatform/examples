@@ -37,22 +37,24 @@ app.get('/', (req, res) => {
 
 app.post('/createRequest', async (req, res) => {
   const {
+    mode,
     namespace,
     identifier,
     withMockData,
     request_timeout,
     min_idp,
+    idp_id_list
   } = req.body;
 
   const referenceId = Math.floor(Math.random() * 100000 + 1).toString();
 
   try {
     const request = await API.createRequest({
-      mode: 3,
+      mode: mode || 3,
       namespace,
       identifier,
       reference_id: referenceId,
-      idp_id_list: [],
+      idp_id_list: idp_id_list || [],
       callback_url: `http://${config.ndidApiCallbackIp}:${
         config.ndidApiCallbackPort
       }/rp/request/${referenceId}`,

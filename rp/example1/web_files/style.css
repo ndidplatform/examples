@@ -30,6 +30,10 @@ body {
   align-items: center;
 }
 
+.form-check-inline > .form-check-input[type="radio"] {
+  height: 1.1rem;
+}
+
 /*
   Circle loader with completed state
   https://codepen.io/alimuzzaman/pen/LyoyPj
