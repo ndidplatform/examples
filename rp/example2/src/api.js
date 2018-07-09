@@ -5,6 +5,16 @@ const apiServerAddress =
 
 const apiBaseUrl = apiServerAddress + '/v2';
 
+function logResponse(url, method, status, body, error) {
+  console.log(
+    `Received response from NDID API:
+    URL: ${url} (${method})
+    Status: ${status}\
+    ${body ? '\nBody:\n' + JSON.stringify(body, null, 2) : ''}\
+    ${error ? '\nError:\n' + JSON.stringify(error, null, 2) : ''}`
+  );
+}
+
 export async function httpGet(url) {
   try {
     const response = await fetch(url, {
@@ -17,12 +27,14 @@ export async function httpGet(url) {
     if (!response.ok) {
       if (response.status === 400 || response.status === 500) {
         const errorJson = await response.json();
+        logResponse(url, 'GET', response.status, null, errorJson);
         throw errorJson;
       }
       throw response;
     }
 
     const responseJson = await response.json();
+    logResponse(url, 'GET', response.status, responseJson);
 
     return responseJson;
   } catch (error) {
@@ -48,6 +60,7 @@ export async function httpPost(url, body, expectResponseBody) {
         response.status === 403
       ) {
         const errorJson = await response.json();
+        logResponse(url, 'POST', response.status, null, errorJson);
         throw errorJson;
       }
       throw response;
@@ -55,8 +68,10 @@ export async function httpPost(url, body, expectResponseBody) {
 
     if (expectResponseBody) {
       const responseJson = await response.json();
+      logResponse(url, 'POST', response.status, responseJson);
       return responseJson;
     }
+    logResponse(url, 'POST', response.status);
   } catch (error) {
     throw error;
   }
