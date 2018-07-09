@@ -67,7 +67,7 @@ export function createRequest({
   namespace,
   identifier,
   reference_id,
-  idp_list,
+  idp_id_list,
   callback_url,
   data_request_list,
   request_message,
@@ -81,7 +81,7 @@ export function createRequest({
     {
       mode,
       reference_id,
-      idp_list,
+      idp_id_list,
       callback_url,
       data_request_list,
       request_message,

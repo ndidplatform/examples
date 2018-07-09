@@ -90,6 +90,7 @@ function handleWsMessage(data) {
       }
 
       if (
+        data.mode === 3 &&
         data.response_valid_list.find(
           (responseValid) =>
             !responseValid.valid_proof || !responseValid.valid_ial
@@ -205,6 +206,14 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
       min_idp: document.getElementById('min_idp').value,
       withMockData,
       request_timeout: document.getElementById('timeout').value,
+      idp_id_list: document
+        .getElementById('idp_id_list')
+        .value.split(',')
+        .map((str) => str.trim())
+        .filter((str) => str),
+      mode: parseInt(
+        document.querySelector('input[name="mode"]:checked').value
+      ),
     }),
   })
     .then((response) => {
