@@ -16,7 +16,7 @@ app.post('/as/service/:serviceId', async (req, res) => {
   const { serviceId } = req.params;
   console.log(
     `Received data request callback for service: ${serviceId} from NDID API:`,
-    callbackData
+    JSON.stringify(callbackData, null, 2)
   );
   eventEmitter.emit('callback', callbackData);
   res.status(204).end();
@@ -26,7 +26,7 @@ app.post('/as/service', async (req, res) => {
   const callbackData = req.body;
   console.log(
     'Received register service callback from NDID API:',
-    callbackData
+    JSON.stringify(callbackData, null, 2)
   );
   eventEmitter.emit('callback', callbackData);
   res.status(204).end();
@@ -34,7 +34,7 @@ app.post('/as/service', async (req, res) => {
 
 app.post('/as/data', async (req, res) => {
   const callbackData = req.body;
-  console.log('Received send data callback from NDID API:', callbackData);
+  console.log('Received send data callback from NDID API:', JSON.stringify(callbackData, null, 2));
   eventEmitter.emit('callback', callbackData);
   res.status(204).end();
 });
