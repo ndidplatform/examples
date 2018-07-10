@@ -62,11 +62,11 @@ app.post('/idp/identity', async (req, res) => {
 });
 
 app.post('/idp/accessor', async (req, res) => {
-  let { sid_hash, accessor_id, reference_id } = req.body;
+  let { sid, accessor_id, reference_id } = req.body;
   const { accessor_private_key } = db.getReference(reference_id);
   //console.log(sid,hash_of_sid);
   res.status(200).send({
-    signature: zkProof.accessorSign(accessor_private_key, sid_hash),
+    signature: zkProof.signMessage(sid, accessor_private_key),
   });
   //test accessor/sign failed
   //res.status(500).end();

@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import { spawnSync } from 'child_process';
-import fs from 'fs';
 import * as config from './config';
 
 export function genNewKeyPair(sid) {
@@ -25,12 +24,4 @@ export function signMessage(message, privateKey) {
     .createSign('SHA256')
     .update(message)
     .sign(privateKey, 'base64');
-}
-
-export function accessorSign(privateKey, text) {
-  const encrypted = crypto.privateEncrypt(
-    privateKey,
-    Buffer.from(text, 'base64')
-  );
-  return encrypted.toString('base64');
 }
