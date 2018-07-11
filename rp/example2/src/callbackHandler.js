@@ -14,7 +14,7 @@ app.use(bodyParser.json({ limit: '2mb' }));
 app.post('/rp/request/:referenceId', async (req, res) => {
   try {
     const callbackData = req.body;
-    console.log('Received request callback from NDID API:', callbackData);
+    console.log('Received request callback from NDID API:', JSON.stringify(callbackData, null, 2));
     eventEmitter.emit('callback', callbackData);
     res.status(204).end();
   } catch (error) {
@@ -26,7 +26,7 @@ app.post('/rp/request/:referenceId', async (req, res) => {
 app.post('/rp/request/close', async (req, res) => {
   try {
     const callbackData = req.body;
-    console.log('Received close request callback from NDID API:', callbackData);
+    console.log('Received close request callback from NDID API:', JSON.stringify(callbackData, null, 2));
     eventEmitter.emit('callback', callbackData);
     res.status(204).end();
   } catch (error) {

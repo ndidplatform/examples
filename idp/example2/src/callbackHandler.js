@@ -40,7 +40,7 @@ app.post('/idp/request', async (req, res) => {
     const callbackData = req.body;
     console.log(
       'Received incoming request callback from NDID API:',
-      callbackData
+      JSON.stringify(callbackData, null, 2)
     );
     eventEmitter.emit('callback', callbackData);
     res.status(204).end();
@@ -55,7 +55,7 @@ app.post('/idp/identity', async (req, res) => {
     const callbackData = req.body;
     console.log(
       'Received create identity callback from NDID API:',
-      callbackData
+      JSON.stringify(callbackData, null, 2)
     );
     eventEmitter.emit('callback', callbackData);
     res.status(204).end();
@@ -68,7 +68,7 @@ app.post('/idp/identity', async (req, res) => {
 app.post('/idp/identity/accessor', async (req, res) => {
   try {
     const callbackData = req.body;
-    console.log('Received add accessor callback from NDID API:', callbackData);
+    console.log('Received add accessor callback from NDID API:', JSON.stringify(callbackData, null, 2));
     eventEmitter.emit('callback', callbackData);
     res.status(204).end();
   } catch (error) {
@@ -95,7 +95,7 @@ app.post('/idp/response', async (req, res) => {
     const callbackData = req.body;
     console.log(
       'Received response result callback from NDID API:',
-      callbackData
+      JSON.stringify(callbackData, null, 2)
     );
     eventEmitter.emit('callback', callbackData);
     res.status(204).end();

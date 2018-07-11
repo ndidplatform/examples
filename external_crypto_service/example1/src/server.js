@@ -48,6 +48,7 @@ app.post('/dpki/decrypt', async (req, res) => {
   try {
     const { node_id, encrypted_message, key_type } = req.body;
     console.log('========== decrypt', node_id);
+    console.log('decrypt requested with body:\n', JSON.stringify(req.body, null, 2));
 
     const keyPath = path.join(__dirname, '..', 'devKey', node_id);
 
@@ -56,10 +57,12 @@ app.post('/dpki/decrypt', async (req, res) => {
     const decryptedMessageBuffer = privateDecrypt(key, encrypted_message);
 
     const decryptedMessageBase64 = decryptedMessageBuffer.toString('base64');
-
-    res.status(200).json({
-      decrypted_message: decryptedMessageBase64,
-    });
+    const json = {
+      decrypted_message: decryptedMessageBase64
+    };
+    console.log('respond decrypt request with body:\n', JSON.stringify(json, null, 2));
+    
+    res.status(200).json(json);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -76,7 +79,8 @@ app.post('/dpki/sign', async (req, res) => {
       sign_method,
     } = req.body;
 
-    console.log('sign', node_id);
+    console.log('==================== sign', node_id);
+    console.log('sign requested with body:\n', JSON.stringify(req.body, null, 2));
     const keyPath = path.join(__dirname, '..', 'devKey', node_id);
 
     const key = fs.readFileSync(keyPath, 'utf8').toString();
@@ -85,10 +89,12 @@ app.post('/dpki/sign', async (req, res) => {
 
     // Hash then encrypt OR encrypt received hash
     const signature = createSignature(key, hash_method, request_message);
-
-    res.status(200).json({
+    const json = {
       signature,
-    });
+    };
+    console.log('respond sign request with body:\n', JSON.stringify(json, null, 2));
+
+    res.status(200).json(json);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -107,6 +113,7 @@ app.post('/dpki/master/sign', async (req, res) => {
 
     const keyPath = path.join(__dirname, '..', 'devKey', node_id + '_master');
     console.log('==================== master-sign', node_id);
+    console.log('master-sign requested with body:\n', JSON.stringify(req.body, null, 2));
 
     const key = fs.readFileSync(keyPath, 'utf8').toString();
 
@@ -114,10 +121,12 @@ app.post('/dpki/master/sign', async (req, res) => {
 
     // Hash then encrypt OR encrypt received hash
     const signature = createSignature(key, hash_method, request_message);
-
-    res.status(200).json({
+    const json = {
       signature,
-    });
+    };
+    console.log('respond master-sign request with body:\n', JSON.stringify(json, null, 2));
+
+    res.status(200).json(json);
   } catch (error) {
     res.status(500).json(error);
   }
