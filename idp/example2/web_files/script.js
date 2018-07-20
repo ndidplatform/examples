@@ -104,7 +104,7 @@ function createListItem(requestObject) {
   }</div>
     <div><b>Message</b>: ${requestObject.request_message}</div>`;
 
-  if (requestObject.data_request_list.length !== 0) {
+  if (requestObject.data_request_list && requestObject.data_request_list.length !== 0) {
     let dataDiv = document.createElement('div');
     dataDiv.innerHTML = `<b>Request data</b>:<br/>`;
 
