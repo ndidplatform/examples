@@ -202,7 +202,7 @@ async function createResponse(userId, requestId, status) {
       secret: user.accessors[0].secret,
       status,
       signature: zkProof.signMessage(
-        savedRequest.request_message,
+        savedRequest.request_message_salt + savedRequest.request_message,
         user.accessors[0].accessor_private_key
       ),
       accessor_id: user.accessors[0].accessor_id,
