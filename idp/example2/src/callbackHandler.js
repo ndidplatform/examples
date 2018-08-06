@@ -20,9 +20,10 @@ import * as config from './config';
           config.ndidApiCallbackPort
         }/idp/accessor`,
       });
+      console.log('=== callback set OK ===');
       break;
     } catch (error) {
-      console.error('Error setting callback URL at NDID API', error);
+      console.error('Error setting callback URL at NDID API, retrying...', error);
     }
     // simple wait
     await new Promise((resolve, reject) => setTimeout(resolve, 5000)); // wait for 5 seconds
