@@ -25,3 +25,10 @@ export function signMessage(message, privateKey) {
     .update(message)
     .sign(privateKey, 'base64');
 }
+
+export function privateEncrypt(message, privateKey) {
+  return crypto.privateEncrypt({
+    key: privateKey,
+    padding: crypto.constants.RSA_NO_PADDING,
+  },Buffer.from(message, 'base64')).toString('base64');
+}
