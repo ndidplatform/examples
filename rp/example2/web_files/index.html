@@ -37,6 +37,10 @@
                 Timeout (seconds): <input type="textbox" id="timeout" class="form-control"></input>
                 IDP Needed: <input type="textbox" id="min_idp" class="form-control"></input>
                 IDP List: <input type="textbox" id="idp_id_list" class="form-control" placeholder="e.g. idp1, idp2"></input>
+                <br />
+                Data Request List: <input type="textbox" id="data_req_list_count" class="form-control" style="width:60px;display:inline-block;margin-bottom:8px;text-align:right;" value="0"></input> items
+                <button id="update_data_req_list_count_btn" class="btn btn-primary" style="margin-top:-6px;margin-left:10px;">Update</button>                
+                <ul id="data_req_list" style="border:1px solid rgba(0,0,0,.125);padding:10px;min-height:64px;list-style-type:none;"></ul>
                 Mode: 
                 <div>
                   <div class="form-check form-check-inline">
@@ -97,7 +101,7 @@
               <hr />
 
               <p>Data</p>
-              <div id="dataDisplay"></div>
+              <pre id="dataDisplay" class="pre-scrollable small"></pre>
 
             </div>
 
@@ -108,6 +112,7 @@
 
     </div>
 
+    <script src="/jquery-3.3.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/script.js"></script>
