@@ -78,6 +78,7 @@ app.post('/createRequest', async (req, res) => {
     });
     res.status(200).json({ requestId: request.request_id, referenceId });
   } catch (error) {
+    console.error(error);
     res.status(500).json(error.error ? error.error.message : error);
   }
 });
