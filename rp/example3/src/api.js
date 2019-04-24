@@ -110,19 +110,19 @@ export function createRequest({
 }
 
 export function getRequest({ requestId }) {
-  return httpGet(`${apiBaseUrl}/rp/requests/${requestId}`);
+  return httpGet(`${apiBaseUrl}/utility/requests/${requestId}`);
 }
 
 export function getDataFromAS({ requestId }) {
-  return httpGet(`${apiBaseUrl}/rp/requests/data/${requestId}`);
+  return httpGet(`${apiBaseUrl}/rp/request_data/${requestId}`);
 }
 
 export function closeRequest(body) {
-  return httpPost(`${apiBaseUrl}/rp/requests/close`, body);
+  return httpPost(`${apiBaseUrl}/rp/request_close`, body);
 }
 
 export function setDpkiCallbackUrl({ sign_url, master_sign_url, decrypt_url }) {
-  return httpPost(`${apiBaseUrl}/dpki/node/callback`, {
+  return httpPost(`${apiBaseUrl}/node/callback`, {
     sign_url,
     master_sign_url,
     decrypt_url,

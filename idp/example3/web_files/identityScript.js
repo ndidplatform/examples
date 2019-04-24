@@ -77,7 +77,7 @@ function createNewIdentity() {
   disableButton(true);
   namespace = document.getElementById('namespaceNew').value;
   identifier = document.getElementById('identifierNew').value;
-  let mode = document.getElementById('modeNew').value;
+  let mode = document.querySelector('input[name="mode"]:checked').value;
 
   fetch('/identity', {
     method: 'POST',

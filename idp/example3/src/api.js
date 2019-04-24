@@ -77,12 +77,6 @@ export async function httpPost(url, body, expectResponseBody) {
   }
 }
 
-export function registerAccessorCallback(url) {
-  return httpPost(`${apiBaseUrl}/idp/accessor/callback`, {
-    url,
-  });
-}
-
 export function getCallbackUrls() {
   return httpGet(`${apiBaseUrl}/idp/callback`);
 }
@@ -140,7 +134,7 @@ export function addAccessor(data) {
 }
 
 export function setDpkiCallbackUrl({ sign_url, master_sign_url, decrypt_url }) {
-  return httpPost(`${apiBaseUrl}/dpki/node/callback`, {
+  return httpPost(`${apiBaseUrl}/node/callback`, {
     sign_url,
     master_sign_url,
     decrypt_url,

@@ -62,7 +62,7 @@ app.post('/createRequest', async (req, res) => {
         ? [
             {
               service_id: 'bank_statement',
-              as_id_list: ['as1', 'as2', 'as3', 'mock_as_1'],
+              as_id_list: ['as1'],
               min_as: 1,
               request_params: JSON.stringify({
                 format: 'pdf',
@@ -121,10 +121,10 @@ ndidCallbackEvent.on('callback', function(data) {
   } else if (data.type === 'request_status') {
     if (
       data.mode === 1 ||
-      (data.mode === 3 &&
+      ((data.mode === 2 || data.mode === 3) &&
         data.response_valid_list.find(
           (responseValid) =>
-            !responseValid.valid_proof || !responseValid.valid_ial
+            !responseValid.valid_signature || !responseValid.valid_ial
         ) == null)
     ) {
       if (data.status === 'completed') {
