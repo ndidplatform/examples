@@ -105,7 +105,7 @@ app.post('/identity', async (req, res) => {
       accessor_id,
     });
 
-    res.status(200).send({
+    res.status(200).json({
       request_id,
     });
   } catch (error) {
@@ -157,7 +157,7 @@ app.post('/accessors', async (req, res) => {
       accessor_id,
     });
 
-    res.status(200).send({
+    res.status(200).json({
       request_id,
       accessor_id,
     });
@@ -181,7 +181,7 @@ app.get('/requests/:namespace/:identifier', async function(req, res) {
   const userId = user.id;
   const requests = db.getRequests(userId);
 
-  res.status(200).send(requests);
+  res.status(200).json(requests);
 });
 
 async function createResponse(userId, requestId, status) {
@@ -204,9 +204,8 @@ async function createResponse(userId, requestId, status) {
       identifier: user.identifier,
       ial: 2.3,
       aal: 3,
-      secret: user.accessors[0].secret,
       status,
-      accessor_id: user.accessors[0].accessor_id,
+      accessor_id: user.accessorIds[0],
     });
     return reference_id;
   } catch (error) {
@@ -284,14 +283,12 @@ ndidCallbackEvent.on('callback', (data) => {
         accessor_public_key,
       } = db.getReference(data.reference_id);
       db.addUser(namespace, identifier, data.reference_group_code, {
-        accessors: [
-          {
-            accessor_id,
-            accessor_private_key,
-            accessor_public_key,
-            secret: data.secret,
-          },
-        ],
+        accessorIds: [accessor_id],
+      });
+      db.addAccessor(accessor_id, {
+        reference_group_code: data.reference_group_code,
+        accessor_private_key,
+        accessor_public_key,
       });
       data = {
         ...data,
@@ -315,15 +312,12 @@ ndidCallbackEvent.on('callback', (data) => {
       } = db.getReference(data.reference_id);
       const user = db.getUserByIdentifier(namespace, identifier);
       db.updateUser(namespace, identifier, {
-        accessors: [
-          ...user.accessors,
-          {
-            accessor_id,
-            accessor_private_key,
-            accessor_public_key,
-            secret: data.secret,
-          },
-        ],
+        accessorIds: [...user.accessorIds, accessor_id],
+      });
+      db.addAccessor(accessor_id, {
+        reference_group_code: data.reference_group_code,
+        accessor_private_key,
+        accessor_public_key,
       });
       data = {
         ...data,
@@ -344,7 +338,7 @@ ndidCallbackEvent.on('callback', (data) => {
       }
     }
   } else if (data.type === 'incoming_request') {
-    const user = db.getUserByIdentifier(data.namespace, data.identifier);
+    const user = db.getUserByReferenceGroupCode(data.reference_group_code);
     if (!user) return;
     db.saveRequest(user.id, data);
   } else if (data.type === 'error') {

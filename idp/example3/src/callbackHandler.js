@@ -86,9 +86,9 @@ app.post('/idp/identity/accessor', async (req, res) => {
 
 app.post('/idp/accessor/encrypt', async (req, res) => {
   try {
-    let { reference_id, request_message_padded_hash } = req.body;
-    const { accessor_private_key } = db.getReference(reference_id);
-    res.status(200).send({
+    let { accessor_id, request_message_padded_hash } = req.body;
+    const { accessor_private_key } = db.getAccessor(accessor_id);
+    res.status(200).json({
       signature: utils.createResponseSignature(
         accessor_private_key,
         request_message_padded_hash

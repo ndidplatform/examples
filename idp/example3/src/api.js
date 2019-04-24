@@ -89,12 +89,12 @@ export function getCallbackUrls() {
 
 export function setCallbackUrls({
   incoming_request_url,
-  accessor_sign_url,
+  accessor_encrypt_url,
   error_url,
 }) {
   return httpPost(`${apiBaseUrl}/idp/callback`, {
     incoming_request_url,
-    accessor_sign_url,
+    accessor_encrypt_url,
     error_url,
   });
 }

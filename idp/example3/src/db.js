@@ -10,17 +10,18 @@ db.defaults({
   references: [],
   users: [],
   requests: [],
+  accessors: [],
   // userCount: 0,
 }).write();
 
-export const getReference = (referenceId) => {
+export function getReference(referenceId) {
   return db
     .get('references')
     .find({ id: referenceId })
     .value();
-};
+}
 
-export const addOrUpdateReference = (referenceId, data) => {
+export function addOrUpdateReference(referenceId, data) {
   const existingReference = getReference(referenceId);
   if (existingReference != null) {
     db.get('references')
@@ -35,29 +36,29 @@ export const addOrUpdateReference = (referenceId, data) => {
       })
       .write();
   }
-};
+}
 
-export const removeReference = (referenceId) => {
+export function removeReference(referenceId) {
   db.get('references')
     .remove({ id: referenceId })
     .write();
-};
+}
 
-export const getUser = (userId) => {
+export function getUser(userId) {
   return db
     .get('users')
     .find({ id: userId })
     .value();
-};
+}
 
-/*export const getUserByCid = (cid) => {
+/*export function getUserByCid(cid) {
   return db
     .get('users')
     .find({ citizenId: cid.toString() })
     .value();
-};*/
+}*/
 
-export const getUserByIdentifier = (namespace, identifier) => {
+export function getUserByIdentifier(namespace, identifier) {
   return db
     .get('users')
     .find({
@@ -65,18 +66,18 @@ export const getUserByIdentifier = (namespace, identifier) => {
       identifier,
     })
     .value();
-};
+}
 
-export const getUserByReferenceGroupCode = (reference_group_code) => {
+export function getUserByReferenceGroupCode(reference_group_code) {
   return db
     .get('users')
     .find({
       reference_group_code,
     })
     .value();
-};
+}
 
-export const addUser = (namespace, identifier, reference_group_code, data) => {
+export function addUser(namespace, identifier, reference_group_code, data) {
   let checkUser = getUserByIdentifier(namespace, identifier);
   if (checkUser && checkUser.id) return 0;
   const id = `${namespace}-${identifier}`;
@@ -90,34 +91,34 @@ export const addUser = (namespace, identifier, reference_group_code, data) => {
     })
     .write();
   return id;
-};
+}
 
-export const updateUser = (namespace, identifier, data) => {
+export function updateUser(namespace, identifier, data) {
   db.get('users')
     .find({ namespace, identifier })
     .assign(data)
     .write();
-};
+}
 
-export const removeUser = (namespace, identifier) => {
+export function removeUser(namespace, identifier) {
   db.get('users')
     .remove({
       namespace,
       identifier,
     })
     .write();
-};
+}
 
-export const saveRequest = (userId, request) => {
+export function saveRequest(userId, request) {
   db.get('requests')
     .push({
       userId,
       request,
     })
     .write();
-};
+}
 
-export const getRequest = (userId, requestId) => {
+export function getRequest(userId, requestId) {
   //console.log(userId,requestId);
   const requestWithUserId = db
     .get('requests')
@@ -125,9 +126,9 @@ export const getRequest = (userId, requestId) => {
     .value();
   const request = requestWithUserId.request;
   return request;
-};
+}
 
-export const getRequests = (userId) => {
+export function getRequests(userId) {
   const requestsWithUserId = db
     .get('requests')
     .filter({ userId })
@@ -136,10 +137,28 @@ export const getRequests = (userId) => {
     (requestWithUserId) => requestWithUserId.request
   );
   return requests;
-};
+}
 
-export const removeRequest = (requestId) => {
+export function removeRequest(requestId) {
   db.get('requests')
     .remove({ request: { request_id: requestId } })
     .write();
-};
+}
+
+export function getAccessor(accessorId) {
+  return db
+    .get('accessors')
+    .find({
+      accessorId,
+    })
+    .value();
+}
+
+export function addAccessor(accessorId, accessorData) {
+  db.get('accessors')
+    .push({
+      accessorId,
+      ...accessorData,
+    })
+    .write();
+}
