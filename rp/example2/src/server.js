@@ -44,6 +44,7 @@ app.post('/createRequest', async (req, res) => {
     request_timeout,
     min_idp,
     idp_id_list,
+    data_request_list
   } = req.body;
 
   const referenceId = Math.floor(Math.random() * 100000 + 1).toString();
@@ -59,20 +60,16 @@ app.post('/createRequest', async (req, res) => {
         config.ndidApiCallbackPort
       }/rp/request/${referenceId}`,
       data_request_list: withMockData
-        ? [
-            {
-              service_id: 'bank_statement',
-              as_id_list: ['as1', 'as2', 'as3', 'mock_as_1'],
-              min_as: 1,
-              request_params: JSON.stringify({
-                format: 'pdf',
-              }),
-            },
-          ]
+        ? data_request_list.map(item => ({
+          service_id: item.service_id,
+          as_id_list: item.as_id_list || [],
+          min_as: item.min_as ? parseInt(item.min_as) : 1,
+          request_params: item.request_params || JSON.stringify({type: 'pdf'})
+        }))
         : [],
-      request_message: 'dummy Request Message',
-      min_ial: 1.1,
-      min_aal: 1,
+      request_message: `Would you give Siam Comercial Bank your consent to sent your information to Krung Thai Bank (REF: ${referenceId})?`,
+      min_ial: 2.3,
+      min_aal: 2.2,
       min_idp: min_idp ? parseInt(min_idp) : 1,
       request_timeout: request_timeout ? parseInt(request_timeout) : 86400,
     });
