@@ -63,30 +63,26 @@ let allDataSigned = false;
     });
 });*/
 
-const updateDataReqListCountButton = document.getElementById('update_data_req_list_count_btn');
-updateDataReqListCountButton.addEventListener('click', (event) => {
-    console.log('dafuq');
-    updateDataReqListCount()
-  });
+const dataReqListCountInput = document.getElementById('data_req_list_count');
+dataReqListCountInput.addEventListener('input', function(event) {
+  updateDataReqListCount(this.value);
+});
 
-function updateDataReqListCount() {
-  const count = $('#data_req_list_count').val();
-
+function updateDataReqListCount(count) {
   if (!isFinite(count) || count < 0) return;
 
-  $('#data_req_list').html('');
-
+  let innerHTML = '';
   for (let i = 0; i < count; i++) {
-    $('#data_req_list').append(
-      '<li style="list-style:none;" id="data_req_list_item_' + i + '">' +
-        'Service ID: <input type="textbox" id="service_id" class="form-control" placeholder="e.g. 001.cust_info_001"></input>' +
-        'AS ID List: <input type="textbox" id="as_id_list" class="form-control" placeholder="e.g. as1, as2"></input>' +
-        'AS Needed: <input type="textbox" id="min_as" class="form-control"></input>' +
-        'Request Params: <input type="textbox" id="request_params" class="form-control"></input>' +
-        (i < count - 1 ? '<hr />' : '') +
-      '</li>'
-    );
+    innerHTML += `<li style="list-style:none;" id="data_req_list_item_${i}">
+      Service ID: <input type="textbox" id="service_id_${i}" class="form-control" placeholder="e.g. bank_statement, 001.cust_info_001"></input>
+      AS ID List: <input type="textbox" id="as_id_list_${i}" class="form-control" placeholder="e.g. as1, as2"></input>
+      AS Needed: <input type="textbox" id="min_as_${i}" class="form-control"></input>
+      Request Params: <input type="textbox" id="request_params_${i}" class="form-control"></input>
+      ${i < count - 1 ? '<hr />' : ''}
+      </li>`;
   }
+
+  document.getElementById('data_req_list').innerHTML = innerHTML;
 }
 
 function handleWsMessage(data) {
@@ -219,28 +215,24 @@ function sendVerifyRequest(withMockData = false, hideSourceRp = false) {
   else verifyButton.textContent = 'Requesting...';
   verifyButton.disabled = true;
   verifyWithMockDataButton.disabled = true;
-  
+
   const data_req_list = [];
-  const dataReqListCount = parseInt(document.getElementById('data_req_list_count').value);
+  const dataReqListCount = parseInt(dataReqListCountInput.value);
   for (let i = 0; i < dataReqListCount; i++) {
-    const listItem = $('#data_req_list_item_' + i);
-    const service_id = listItem
-      .find('#service_id')
-      .val();
-    const as_id_list = listItem
-      .find('#as_id_list')
-      .val()
-      .split(',')
+    const service_id = document.getElementById('service_id_' + i).value;
+    const as_id_list = document
+      .getElementById('as_id_list_' + i)
+      .value.split(',')
       .map((str) => str.trim())
       .filter((str) => str);
-    const min_as = parseInt(listItem.find('#min_as').val());
-    const request_params = listItem.find('#request_params').val();
+    const min_as = parseInt(document.getElementById('min_as_' + i).value);
+    const request_params = document.getElementById('request_params_' + i).value;
 
     data_req_list.push({
       service_id,
       as_id_list,
       min_as,
-      request_params
+      request_params,
     });
   }
 

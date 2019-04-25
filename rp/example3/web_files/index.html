@@ -32,14 +32,13 @@
 
               <div id="idps"></div>-->
               <div>
-                Namespace: <input type="textbox" id="namespace" class="form-control"></input>
-                Identifier: <input type="textbox" id="identifier" class="form-control"></input>
-                Timeout (seconds): <input type="textbox" id="timeout" class="form-control"></input>
-                IDP Needed: <input type="textbox" id="min_idp" class="form-control"></input>
-                IDP List: <input type="textbox" id="idp_id_list" class="form-control" placeholder="e.g. idp1, idp2"></input>
+                Namespace: <input type="text" id="namespace" class="form-control"></input>
+                Identifier: <input type="text" id="identifier" class="form-control"></input>
+                Timeout (seconds): <input type="text" id="timeout" class="form-control"></input>
+                IDP Needed: <input type="text" id="min_idp" class="form-control"></input>
+                IDP List: <input type="text" id="idp_id_list" class="form-control" placeholder="e.g. idp1, idp2"></input>
                 <br />
-                Data Request List: <input type="textbox" id="data_req_list_count" class="form-control" style="width:60px;display:inline-block;margin-bottom:8px;text-align:right;" value="0"></input> items
-                <button id="update_data_req_list_count_btn" class="btn btn-primary" style="margin-top:-6px;margin-left:10px;">Update</button>                
+                Data Request List: <input type="number" min="0" id="data_req_list_count" class="form-control" style="width:60px;display:inline-block;margin-bottom:8px;text-align:right;" value="0"></input> items
                 <ul id="data_req_list" style="border:1px solid rgba(0,0,0,.125);padding:10px;min-height:64px;list-style-type:none;"></ul>
                 Mode: 
                 <div>
