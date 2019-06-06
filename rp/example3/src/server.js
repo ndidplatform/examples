@@ -45,6 +45,7 @@ app.post('/createRequest', async (req, res) => {
     min_idp,
     idp_id_list,
     data_request_list,
+    bypass_identity_check = false,
   } = req.body;
 
   const referenceId = Math.floor(Math.random() * 100000 + 1).toString();
@@ -73,6 +74,7 @@ app.post('/createRequest', async (req, res) => {
       min_aal: 2.2,
       min_idp: min_idp ? parseInt(min_idp) : 1,
       request_timeout: request_timeout ? parseInt(request_timeout) : 86400,
+      bypass_identity_check,
     });
     res.status(200).json({ requestId: request.request_id, referenceId });
   } catch (error) {

@@ -90,6 +90,7 @@ export function createRequest({
   min_aal,
   min_idp,
   request_timeout,
+  bypass_identity_check,
 }) {
   return httpPost(
     `${apiBaseUrl}/rp/requests/${namespace}/${identifier}`,
@@ -104,6 +105,7 @@ export function createRequest({
       min_aal,
       min_idp,
       request_timeout,
+      bypass_identity_check,
     },
     true
   );
