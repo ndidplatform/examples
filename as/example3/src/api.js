@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 const apiServerAddress =
   process.env.API_SERVER_ADDRESS || 'http://localhost:8082';
 
-const apiBaseUrl = apiServerAddress + '/v3';
+const apiBaseUrl = apiServerAddress + '/v4';
 
 function logResponse(url, method, status, body, error) {
   console.log(

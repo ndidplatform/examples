@@ -191,6 +191,24 @@ async function createResponse(userId, requestId, status) {
     throw 'Unknown request ID';
   }
 
+  let accessorId;
+
+  let signature;
+  if (savedRequest.mode === 1) {
+    signature = 'some-signature-signed-by-node-key';
+  } else if (savedRequest.mode === 2 || savedRequest.mode === 3) {
+    accessorId = user.accessorIds[0];
+    const accessor = db.getAccessor(accessorId);
+    const { request_message_padded_hash } = await API.getRequestPaddedHash({
+      request_id: requestId,
+      accessor_id: accessorId,
+    });
+    signature = utils.createResponseSignature(
+      accessor.accessor_private_key,
+      request_message_padded_hash
+    );
+  }
+
   const reference_id = (Date.now() % 100000).toString();
 
   try {
@@ -205,7 +223,8 @@ async function createResponse(userId, requestId, status) {
       ial: 2.3,
       aal: 3,
       status,
-      accessor_id: user.accessorIds[0],
+      accessor_id: accessorId,
+      signature,
     });
     return reference_id;
   } catch (error) {

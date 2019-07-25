@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 const apiServerAddress =
   process.env.API_SERVER_ADDRESS || 'http://localhost:8081';
 
-const apiBaseUrl = apiServerAddress + '/v3';
+const apiBaseUrl = apiServerAddress + '/v4';
 
 function logResponse(url, method, status, body, error) {
   console.log(
@@ -119,6 +119,12 @@ export function createIdpResponse({
     reference_id,
     callback_url,
   });
+}
+
+export function getRequestPaddedHash({ request_id, accessor_id }) {
+  return httpGet(
+    `${apiBaseUrl}/idp/request_message_padded_hash?request_id=${request_id}&accessor_id=${accessor_id}`
+  );
 }
 
 export function createNewIdentity(data) {
