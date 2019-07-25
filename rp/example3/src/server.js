@@ -69,7 +69,7 @@ app.post('/createRequest', async (req, res) => {
               item.request_params || JSON.stringify({ type: 'pdf' }),
           }))
         : [],
-      request_message: `Would you give Siam Comercial Bank your consent to sent your information to Krung Thai Bank (REF: ${referenceId})?`,
+      request_message: `Would you like to give Siam Comercial Bank your consent to send your information to Krung Thai Bank (REF: ${referenceId})?`,
       min_ial: 2.3,
       min_aal: 2.2,
       min_idp: min_idp ? parseInt(min_idp) : 1,
