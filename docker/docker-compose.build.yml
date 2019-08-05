@@ -7,4 +7,4 @@ services:
       labels:
         build.commit: ${BUILD_COMMIT}
         build.date: ${BUILD_DATE}
-    image: ndidplatform/examples:latest
+    image: ndidplatform/examples:${DOCKER_TAG:-latest}
