@@ -8,3 +8,11 @@ services:
         build.commit: ${BUILD_COMMIT}
         build.date: ${BUILD_DATE}
     image: ndidplatform/examples:${DOCKER_TAG:-latest}
+  api_v4-examples:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.api_v4
+      labels:
+        build.commit: ${BUILD_COMMIT}
+        build.date: ${BUILD_DATE}
+    image: ndidplatform/api_v4-examples:${DOCKER_TAG:-latest}

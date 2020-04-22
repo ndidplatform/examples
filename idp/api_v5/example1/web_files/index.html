@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>IDP website</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-brand mb-0 h1 mr-auto">IdP</span>
+      <span>API v4</span>
+    </nav>
+
+    <div class="container">
+
+      <div class="card list-card">
+        <div class="card-header">
+          Pending Requests
+        </div>
+        <ul id="pendingList" class="list-group list-group-flush">
+        </ul>
+        <div class="loading-indicator">Loading...</div>
+      </div>
+
+      <!-- <div class="card list-card">
+        <div class="card-header">
+          Approved
+        </div>
+        <ul id="approved" class="list-group list-group-flush">
+        </ul>
+        <div class="loading-indicator">Loading...</div>
+      </div>
+
+      <div class="card list-card">
+        <div class="card-header">
+          Denied
+        </div>
+        <ul id="denied" class="list-group list-group-flush">
+        </ul>
+        <div class="loading-indicator">Loading...</div>
+      </div> -->
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "ndid-client-app-idp-example",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "npx babel src -d ./build/ --source-maps inline",
+    "start": "npm run build && node ./build/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "lowdb": "^1.0.0",
+    "morgan": "^1.9.0",
+    "node-fetch": "^2.1.2",
+    "socket.io": "^2.1.0",
+    "source-map-support": "^0.5.6"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.0.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-babel": "^5.3.0"
+  }
+}
