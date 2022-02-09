@@ -5,7 +5,7 @@ COPY rp/api_v5/example1/package*.json /examples/rp/
 COPY as/api_v5/example1/package*.json /examples/as/
 COPY external_crypto_service/example1/package*.json /examples/dpki/
 
-RUN apk update && apk add --no-cache --virtual .build-deps python make g++
+RUN apk update && apk add --no-cache --virtual .build-deps python3 make g++
 RUN cd /examples/idp && npm install && \
     cd /examples/rp && npm install && \
     cd /examples/as && npm install && \
